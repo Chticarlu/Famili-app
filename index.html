@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6D5DFB">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Famili">
+<title>Famili Premium Sync</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--text:#17181c;--muted:#777b86;--line:#e7e9f0;--accent:#6d5dfb;--accent2:#9b8cff;--soft:#f0eeff;--green:#159461;--red:#d84a4a;--shadow:0 12px 34px rgba(40,42,60,.08)}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:95px}
+.app{max-width:820px;margin:auto;padding:18px} .hidden{display:none!important}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px} .logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:900;font-size:23px;box-shadow:var(--shadow)}
+.brand h1{margin:0;font-size:23px} .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.card{background:var(--card);border-radius:22px;padding:17px;box-shadow:var(--shadow);margin-bottom:14px} .hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-bottom:14px}
+.hero h2{margin:5px 0 7px;font-size:28px} .hero p{margin:0;opacity:.9}
+label{display:block;font-weight:800;font-size:13px;margin:11px 0 6px} input,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:14px;font:inherit;background:#fff}
+button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12px 15px;font-weight:900;background:var(--accent);color:#fff;margin-top:11px} .btn.full{width:100%} .btn.secondary{background:var(--soft);color:#5447d9} .btn.danger{background:#fdecec;color:var(--red)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px} .muted{font-size:13px;color:var(--muted)} .notice{padding:10px 12px;border-radius:12px;margin-top:10px;background:#f1f2f6;font-size:13px} .notice.err{background:#fdecec;color:#9f3030} .notice.ok{background:#eaf8f1;color:#19704b}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#eceef4;padding:4px;border-radius:14px;margin-bottom:14px} .tabs button{border:0;background:transparent;border-radius:11px;padding:10px;font-weight:800;color:var(--muted)} .tabs button.active{background:#fff;color:var(--text)}
+.quickgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px} .quick{background:#fff;border-radius:18px;padding:13px;text-align:center;box-shadow:var(--shadow);text-decoration:none;color:var(--text)} .quick b{display:block;font-size:21px;margin:5px 0 1px} .quick small{color:var(--muted)}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)} .item:last-child{border-bottom:0} .title{font-weight:800} .pill{display:inline-block;background:var(--soft);color:#5447d9;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;margin-top:4px}
+.smallbtn{border:0;border-radius:10px;padding:7px 9px;font-size:11px;font-weight:800} .smallbtn.danger{background:#fdecec;color:var(--red)} .check{display:flex;gap:9px} .check input{width:auto;margin-top:3px}
+.section{display:none} .section.active{display:block} .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:10}
+.navin{max-width:820px;margin:auto;display:grid;grid-template-columns:repeat(8,1fr);gap:2px} .nav button{border:0;background:transparent;color:var(--muted);font-size:9px;padding:6px 2px;border-radius:11px} .nav button.active{background:var(--soft);color:#5447d9;font-weight:800} .nav .e{display:block;font-size:18px}
+.code{text-align:center;background:var(--soft);color:#5447d9;padding:14px;border-radius:16px;font-size:27px;font-weight:900;letter-spacing:3px;margin:10px 0}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pricehero{font-size:34px;font-weight:900}.ai-action{padding:12px;border:1px solid var(--line);border-radius:14px;margin:8px 0;background:#fafafe}.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:6px}@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){.quickgrid{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="app">
+ <div class="brand"><div class="logo">F</div><div><h1>Famili</h1><p>Votre maison, mieux organisée.</p></div></div>
+
+ <section id="authView">
+  <div class="hero"><h2>Votre famille, ensemble.</h2><p>Un seul espace partagé pour l'organisation du foyer.</p></div>
+  <div class="card">
+   <div class="tabs"><button id="loginTab" class="active" onclick="tab('login')">Connexion</button><button id="signupTab" onclick="tab('signup')">Créer un compte</button></div>
+   <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button></div>
+   <div id="signupBox" class="hidden"><label>Prénom</label><input id="signupName"><label>Email</label><input id="signupEmail" type="email"><label>Mot de passe</label><input id="signupPassword" type="password"><button class="btn full" onclick="signup()">Créer mon compte</button></div>
+   <div id="authMsg"></div>
+  </div>
+ </section>
+
+ <section id="householdView" class="hidden">
+  <div class="card topline"><div><div class="muted">Connecté</div><b id="userLabel"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
+  <div class="hero"><h2>Créer votre foyer</h2><p>Ou rejoignez celui de votre famille avec un code.</p></div>
+  <div class="card"><h3>Créer un foyer</h3><label>Nom du foyer</label><input id="hhName" placeholder="Famille Martin"><button class="btn full" onclick="createHH()">Créer</button></div>
+  <div class="card"><h3>Rejoindre un foyer</h3><label>Code</label><input id="joinCode" maxlength="8" style="text-transform:uppercase"><button class="btn full secondary" onclick="joinHH()">Rejoindre</button></div>
+  <div id="hhMsg"></div>
+ </section>
+
+
+ <section id="billingView" class="hidden">
+  <div class="card topline">
+   <div><div class="muted">Famili Premium</div><b id="billingHH">Votre foyer</b></div>
+   <button class="smallbtn" onclick="logout()">Déconnexion</button>
+  </div>
+  <div class="hero">
+   <div class="muted" style="color:#eee">Tout Famili, IA comprise</div>
+   <h2>14 jours gratuits</h2>
+   <p>Puis 5,99 € / mois. Sans engagement.</p>
+  </div>
+  <div class="card">
+   <h3>✨ Famili Premium</h3>
+   <div class="item"><span>📅 Planning familial partagé</span><b>Inclus</b></div>
+   <div class="item"><span>✅ Tâches partagées</span><b>Inclus</b></div>
+   <div class="item"><span>🍽️ Repas & menus IA</span><b>Inclus</b></div>
+   <div class="item"><span>🛒 Courses synchronisées</span><b>Inclus</b></div>
+   <div class="item"><span>💶 Budget du foyer</span><b>Inclus</b></div>
+   <div class="item"><span>✨ Assistant Famili</span><b>Inclus</b></div>
+   <p class="muted">Un seul abonnement couvre le foyer. Le paiement est géré de manière sécurisée par Stripe.</p>
+   <button id="startTrialBtn" class="btn full" onclick="startCheckout()">Commencer mes 14 jours gratuits</button><button id="syncBillingBtn" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button>
+   <div id="billingMsg"></div>
+  </div>
+  <div class="card hidden" id="memberBillingInfo">
+   <h3>Abonnement du foyer</h3>
+   <p class="muted">Le propriétaire du foyer doit activer Famili Premium. Dès que l’abonnement est actif, tous les membres du foyer auront accès à l’application.</p>
+  </div>
+ </section>
+
+ <section id="appView" class="hidden">
+  <div class="hero"><div class="muted" style="color:#eee" id="today"></div><h2 id="hhTitle">Famili</h2><p id="summary">Votre foyer est synchronisé.</p></div>
+  <div class="quickgrid">
+   <a class="quick" href="#" onclick="go('planning');return false">📅<b id="nEvents">0</b><small>événements</small></a>
+   <a class="quick" href="#" onclick="go('tasks');return false">✅<b id="nTasks">0</b><small>tâches</small></a>
+   <a class="quick" href="#" onclick="go('groceries');return false">🛒<b id="nGroceries">0</b><small>à acheter</small></a>
+   <a class="quick" href="#" onclick="go('budget');return false">💶<b id="nBudget">0 €</b><small>dépenses</small></a>
+  </div>
+
+  <div id="home" class="section active">
+   <div class="card"><h3>À venir</h3><div id="homeEvents"></div></div>
+   <div class="card"><h3>Code du foyer</h3><div class="code" id="inviteCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
+  </div>
+
+  <div id="planning" class="section">
+   <div class="card"><h2>Planning</h2><label>Événement</label><input id="eventTitle"><div class="row"><div><label>Date</label><input id="eventDate" type="date"></div><div><label>Heure</label><input id="eventTime" type="time"></div></div><label>Pour qui ?</label><input id="eventPerson"><button class="btn full" onclick="addEvent()">Ajouter</button></div>
+   <div class="card"><div id="eventsList"></div></div>
+  </div>
+
+  <div id="tasks" class="section">
+   <div class="card"><h2>Tâches</h2><label>Tâche</label><input id="taskTitle"><div class="row"><div><label>Pour qui ?</label><input id="taskPerson"></div><div><label>Récurrence</label><select id="taskRepeat"><option value="none">Aucune</option><option value="daily">Tous les jours</option><option value="weekly">Chaque semaine</option></select></div></div><button class="btn full" onclick="addTask()">Ajouter</button></div>
+   <div class="card"><div id="tasksList"></div></div>
+  </div>
+
+  <div id="meals" class="section">
+   <div class="card"><h2>Repas</h2><label>Date</label><input id="mealDate" type="date"><label>Midi</label><input id="mealLunch"><label>Soir</label><input id="mealDinner"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
+   <div class="card"><div id="mealsList"></div></div>
+  </div>
+
+  <div id="groceries" class="section">
+   <div class="card"><h2>Courses</h2><label>Article</label><input id="groceryName"><label>Catégorie</label><select id="groceryCategory"><option>Fruits & légumes</option><option>Frais</option><option>Épicerie</option><option>Boissons</option><option>Hygiène</option><option>Bébé</option><option>Maison</option><option>Autre</option></select><button class="btn full" onclick="addGrocery()">Ajouter</button></div>
+   <div class="card"><div id="groceriesList"></div></div>
+  </div>
+
+  <div id="budget" class="section">
+   <div class="card"><h2>Budget</h2><label>Description</label><input id="budgetLabel"><div class="row"><div><label>Montant</label><input id="budgetAmount" type="number" step="0.01"></div><div><label>Type</label><select id="budgetType"><option value="expense">Dépense</option><option value="income">Revenu</option></select></div></div><button class="btn full" onclick="addBudget()">Ajouter</button></div>
+   <div class="card"><div id="budgetTotals"></div><div id="budgetList"></div></div>
+  </div>
+
+
+  <div id="ai" class="section">
+   <div class="card">
+    <div class="topline"><div><div class="muted">Famili IA</div><h2 style="margin:3px 0 0">✨ Assistant intelligent</h2></div><span class="pill">Beta</span></div>
+    <p class="muted">L’IA propose des actions. Rien n’est ajouté sans votre confirmation.</p>
+   </div>
+
+   <div class="card">
+    <h3>🍽️ Menus IA</h3>
+    <label>Pour combien de personnes ?</label>
+    <input id="aiPeople" placeholder="Ex. 2 adultes + 1 enfant">
+    <div class="row">
+      <div><label>Nombre de jours</label><select id="aiDays"><option>3</option><option selected>5</option><option>7</option></select></div>
+      <div><label>Budget indicatif</label><input id="aiBudget" placeholder="Ex. 70 €"></div>
+    </div>
+    <label>Préférences</label>
+    <input id="aiPreferences" placeholder="Simple, rapide, familial…">
+    <label>Exclusions / allergies</label>
+    <input id="aiExclusions" placeholder="Ex. sans poisson, allergie arachide…">
+    <button class="btn full" onclick="generateMealPlan()">Générer mes menus</button>
+    <div id="mealAiStatus"></div>
+   </div>
+
+   <div class="card">
+    <h3>💬 Assistant Famili</h3>
+    <p class="muted">Exemple : « Ajoute du lait et des couches aux courses et mets dentiste jeudi à 17h. »</p>
+    <label>Votre demande</label>
+    <input id="assistantPrompt" placeholder="Que voulez-vous organiser ?">
+    <button class="btn full" onclick="askFamili()">Demander à Famili</button>
+    <div id="assistantStatus"></div>
+   </div>
+
+   <div id="aiPreview" class="card hidden">
+    <div class="topline"><h3 style="margin:0">À confirmer</h3><span class="pill">Aucune action automatique</span></div>
+    <div id="aiReply" class="muted" style="margin:10px 0"></div>
+    <div id="aiActions"></div>
+    <button class="btn full" onclick="confirmAiActions(this)">Confirmer et ajouter</button>
+    <button class="btn full secondary" onclick="cancelAiActions()">Annuler</button>
+   </div>
+  </div>
+
+  <div id="family" class="section">
+   <div class="card topline"><div><div class="muted">Foyer</div><b id="familyHH"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
+   <div class="card"><h3>Membres</h3><div id="membersList"></div></div>
+   <div class="card"><h3>Invitation</h3><div class="code" id="familyCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
+   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button><button id="syncBillingBtn2" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button></div>
+  </div>
+ </section>
+</div>
+
+<div id="nav" class="nav hidden"><div class="navin">
+<button class="active" onclick="go('home',this)"><span class="e">🏠</span>Accueil</button>
+<button onclick="go('planning',this)"><span class="e">📅</span>Planning</button>
+<button onclick="go('tasks',this)"><span class="e">✅</span>Tâches</button>
+<button onclick="go('meals',this)"><span class="e">🍽️</span>Repas</button>
+<button onclick="go('groceries',this)"><span class="e">🛒</span>Courses</button>
+<button onclick="go('budget',this)"><span class="e">💶</span>Budget</button>
+<button onclick="go('ai',this)"><span class="e">✨</span>IA</button><button onclick="go('family',this)"><span class="e">👨‍👩‍👧</span>Famille</button>
+</div></div>
+
+<script>
+const sb = supabase.createClient("https://mugtbxugqevnxoynkrfz.supabase.co", "sb_publishable_29N94MqLtk6ILcdM8PvCxg_M7ElVTYt");
+let user=null, household=null, householdRole=null, subscription=null, channel=null;
+let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[];
+
+function notice(el,text,type=''){el.innerHTML=`<div class="notice ${type}">${text}</div>`}
+function tab(x){loginTab.classList.toggle('active',x==='login');signupTab.classList.toggle('active',x==='signup');loginBox.classList.toggle('hidden',x!=='login');signupBox.classList.toggle('hidden',x!=='signup');authMsg.innerHTML=''}
+async function signup(){const name=signupName.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value;if(!name||!email||password.length<8)return notice(authMsg,'Prénom, email et mot de passe de 8 caractères minimum.','err');const{data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name}}});if(error)return notice(authMsg,error.message,'err');notice(authMsg,data.session?'Compte créé.':'Compte créé. Vérifiez votre email si une confirmation est demandée.','ok')}
+async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,error.message,'err')}
+async function logout(){await sb.auth.signOut()}
+async function createHH(){const name=hhName.value.trim();if(!name)return notice(hhMsg,'Ajoutez un nom de foyer.','err');const{error}=await sb.rpc('create_household',{p_name:name});if(error)return notice(hhMsg,error.message,'err');await loadState()}
+async function joinHH(){const code=joinCode.value.trim().toUpperCase();const{error}=await sb.rpc('join_household_by_code',{p_code:code});if(error)return notice(hhMsg,'Code invalide ou foyer inaccessible.','err');await loadState()}
+function go(id,btn){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn){document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}window.scrollTo(0,0)}
+async function copyCode(){await navigator.clipboard.writeText(household.invite_code);alert('Code copié : '+household.invite_code)}
+
+async function loadState(){
+ const{data:{session}}=await sb.auth.getSession();user=session?.user||null;
+ authView.classList.toggle('hidden',!!user);
+ householdView.classList.add('hidden');billingView.classList.add('hidden');appView.classList.add('hidden');nav.classList.add('hidden');
+ if(!user)return;
+ userLabel.textContent=user.user_metadata?.display_name||user.email;
+ const{data:hm,error}=await sb.from('household_members').select('household_id,role,households(id,name,invite_code)').eq('user_id',user.id).maybeSingle();
+ household=hm?.households||null; householdRole=hm?.role||null;
+ if(!household){householdView.classList.remove('hidden');return}
+ billingHH.textContent=household.name;
+ hhTitle.textContent=household.name;familyHH.textContent=household.name;inviteCode.textContent=household.invite_code;familyCode.textContent=household.invite_code;
+ const{data:sub}=await sb.from('subscriptions').select('*').eq('household_id',household.id).maybeSingle();
+ subscription=sub||null;
+ const access=hasSubscriptionAccess(subscription);
+ renderSubscriptionState();
+ if(!access){
+   billingView.classList.remove('hidden');
+   startTrialBtn.classList.toggle('hidden',householdRole!=='owner');
+   memberBillingInfo.classList.toggle('hidden',householdRole==='owner');
+   if(new URLSearchParams(location.search).get('checkout')==='success'){
+     notice(billingMsg,'Paiement validé. Activation de votre abonnement en cours…','ok');
+     await waitForSubscriptionActivation();
+   }
+   return;
+ }
+ appView.classList.remove('hidden');nav.classList.remove('hidden');
+ today.textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ await loadAll(); subscribeRealtime();
+ if(location.search.includes('checkout=')) history.replaceState({},'',location.pathname);
+}
+
+function hasSubscriptionAccess(s){
+ if(!s || !['trialing','active'].includes(s.status)) return false;
+ const now=Date.now();
+ if(s.trial_end && new Date(s.trial_end).getTime()>now) return true;
+ if(s.current_period_end && new Date(s.current_period_end).getTime()>now) return true;
+ return s.status==='active' && !s.current_period_end;
+}
+
+function renderSubscriptionState(){
+ if(!subscription){
+   subscriptionInfo.textContent='Aucun abonnement actif.';
+   manageBillingBtn.classList.add('hidden');
+   return;
+ }
+ const statusMap={trialing:'Essai gratuit',active:'Actif',past_due:'Paiement en retard',canceled:'Résilié',unpaid:'Impayé',incomplete:'Incomplet',incomplete_expired:'Expiré',paused:'En pause',none:'Non actif'};
+ let txt=statusMap[subscription.status]||subscription.status;
+ if(subscription.status==='trialing' && subscription.trial_end) txt+=` jusqu’au ${new Date(subscription.trial_end).toLocaleDateString('fr-FR')}`;
+ else if(subscription.current_period_end) txt+=` • prochaine échéance ${new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}`;
+ if(subscription.cancel_at_period_end) txt+=' • résiliation programmée';
+ subscriptionInfo.textContent=txt;
+ manageBillingBtn.classList.toggle('hidden',householdRole!=='owner' || !subscription.stripe_customer_id);
+}
+
+async function startCheckout(){
+ startTrialBtn.disabled=true; startTrialBtn.textContent='Ouverture de Stripe…';
+ try{
+   const{data,error}=await sb.functions.invoke('create-checkout',{body:{household_id:household.id}});
+   if(error)throw error;
+   if(!data?.url)throw new Error(data?.error||'Lien Stripe indisponible');
+   location.href=data.url;
+ }catch(e){
+   console.error(e); notice(billingMsg,'Impossible d’ouvrir Stripe pour le moment.','err');
+   startTrialBtn.disabled=false;startTrialBtn.textContent='Commencer mes 14 jours gratuits';
+ }
+}
+
+
+async function syncSubscription(){
+ const buttons=[document.getElementById('syncBillingBtn'),document.getElementById('syncBillingBtn2')].filter(Boolean);
+ buttons.forEach(b=>{b.disabled=true;b.textContent='Synchronisation…';});
+ try{
+   const{data,error}=await sb.functions.invoke('sync-subscription',{body:{household_id:household.id}});
+   if(error) throw error;
+   if(data?.error) throw new Error(data.error);
+   if(data?.synced){
+     alert('Abonnement synchronisé avec Stripe.');
+     await loadState();
+   }else{
+     alert(data?.message||'Aucun abonnement Stripe trouvé.');
+   }
+ }catch(e){
+   console.error(e);
+   alert("Impossible de synchroniser l'abonnement pour le moment.");
+ }finally{
+   buttons.forEach(b=>{b.disabled=false;b.textContent='Synchroniser mon abonnement';});
+ }
+}
+
+async function openBillingPortal(){
+ manageBillingBtn.disabled=true;
+ try{
+   const{data,error}=await sb.functions.invoke('create-billing-portal',{body:{household_id:household.id}});
+   if(error)throw error;
+   if(!data?.url)throw new Error(data?.error||'Portail indisponible');
+   location.href=data.url;
+ }catch(e){
+   console.error(e);alert("Impossible d'ouvrir la gestion de l'abonnement.");
+   manageBillingBtn.disabled=false;
+ }
+}
+
+async function waitForSubscriptionActivation(){
+ for(let i=0;i<12;i++){
+   await new Promise(r=>setTimeout(r,1500));
+   const{data:sub}=await sb.from('subscriptions').select('*').eq('household_id',household.id).maybeSingle();
+   subscription=sub||null;
+   if(hasSubscriptionAccess(subscription)){
+     history.replaceState({},'',location.pathname);
+     await loadState();
+     return;
+   }
+ }
+ notice(billingMsg,'Stripe a validé le paiement, mais la synchronisation prend un peu de temps. Rechargez la page dans quelques secondes.','ok');
+}
+
+async function loadAll(){
+ const h=household.id;
+ const [a,b,c,d,e,f]=await Promise.all([
+  sb.from('family_events').select('*').eq('household_id',h).order('event_date'),
+  sb.from('family_tasks').select('*').eq('household_id',h).order('created_at'),
+  sb.from('meals').select('*').eq('household_id',h).order('meal_date'),
+  sb.from('groceries').select('*').eq('household_id',h).order('created_at'),
+  sb.from('budget_entries').select('*').eq('household_id',h).order('entry_date',{ascending:false}),
+  sb.from('household_members').select('user_id,role,profiles(display_name,email)').eq('household_id',h)
+ ]);
+ events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];
+ render();
+}
+
+function subscribeRealtime(){
+ if(channel)sb.removeChannel(channel);
+ channel=sb.channel('famili-'+household.id)
+ .on('postgres_changes',{event:'*',schema:'public',table:'family_events',filter:'household_id=eq.'+household.id},loadAll)
+ .on('postgres_changes',{event:'*',schema:'public',table:'family_tasks',filter:'household_id=eq.'+household.id},loadAll)
+ .on('postgres_changes',{event:'*',schema:'public',table:'meals',filter:'household_id=eq.'+household.id},loadAll)
+ .on('postgres_changes',{event:'*',schema:'public',table:'groceries',filter:'household_id=eq.'+household.id},loadAll)
+ .on('postgres_changes',{event:'*',schema:'public',table:'budget_entries',filter:'household_id=eq.'+household.id},loadAll)
+ .subscribe();
+}
+
+async function addEvent(){if(!eventTitle.value.trim()||!eventDate.value)return;await sb.from('family_events').insert({household_id:household.id,title:eventTitle.value.trim(),event_date:eventDate.value,event_time:eventTime.value||null,person:eventPerson.value.trim()||null});eventTitle.value='';eventPerson.value='';await loadAll()}
+async function delEvent(id){await sb.from('family_events').delete().eq('id',id);await loadAll()}
+async function addTask(){if(!taskTitle.value.trim())return;await sb.from('family_tasks').insert({household_id:household.id,title:taskTitle.value.trim(),assigned_to:taskPerson.value.trim()||null,repeat_rule:taskRepeat.value});taskTitle.value='';taskPerson.value='';await loadAll()}
+async function toggleTask(id,v){await sb.from('family_tasks').update({is_done:v}).eq('id',id);await loadAll()}
+async function delTask(id){await sb.from('family_tasks').delete().eq('id',id);await loadAll()}
+async function saveMeal(){if(!mealDate.value)return;await sb.from('meals').upsert({household_id:household.id,meal_date:mealDate.value,lunch:mealLunch.value.trim()||null,dinner:mealDinner.value.trim()||null,created_by:user.id},{onConflict:'household_id,meal_date'});mealLunch.value='';mealDinner.value='';await loadAll()}
+async function delMeal(id){await sb.from('meals').delete().eq('id',id);await loadAll()}
+async function addGrocery(){if(!groceryName.value.trim())return;await sb.from('groceries').insert({household_id:household.id,name:groceryName.value.trim(),category:groceryCategory.value});groceryName.value='';await loadAll()}
+async function toggleGrocery(id,v){await sb.from('groceries').update({is_done:v}).eq('id',id);await loadAll()}
+async function delGrocery(id){await sb.from('groceries').delete().eq('id',id);await loadAll()}
+async function addBudget(){const a=parseFloat(budgetAmount.value);if(!budgetLabel.value.trim()||!a)return;await sb.from('budget_entries').insert({household_id:household.id,label:budgetLabel.value.trim(),amount:a,entry_type:budgetType.value});budgetLabel.value='';budgetAmount.value='';await loadAll()}
+async function delBudget(id){await sb.from('budget_entries').delete().eq('id',id);await loadAll()}
+
+function euro(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0)}
+function render(){
+ const now=new Date(), today0=new Date();today0.setHours(0,0,0,0);
+ const future=events.filter(e=>new Date(e.event_date+'T00:00')>=today0);
+ const openTasks=tasks.filter(x=>!x.is_done), openGroceries=groceries.filter(x=>!x.is_done);
+ const mk=now.toISOString().slice(0,7);const month=budget.filter(x=>x.entry_date.slice(0,7)===mk);const exp=month.filter(x=>x.entry_type==='expense').reduce((s,x)=>s+Number(x.amount),0);
+ nEvents.textContent=future.length;nTasks.textContent=openTasks.length;nGroceries.textContent=openGroceries.length;nBudget.textContent=euro(exp);
+ summary.textContent=`${future.length+openTasks.length+openGroceries.length} éléments à suivre dans le foyer.`;
+ homeEvents.innerHTML=future.slice(0,5).map(e=>`<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''}</div></div></div>`).join('')||'<div class="muted">Rien de prévu.</div>';
+ eventsList.innerHTML=future.map(e=>`<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''} ${e.person?'• '+e.person:''}</div></div><button class="smallbtn danger" onclick="delEvent('${e.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Aucun événement.</div>';
+ tasksList.innerHTML=tasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${t.title}</div><div class="muted">${t.assigned_to||'Non attribuée'}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Aucune tâche.</div>';
+ mealsList.innerHTML=meals.map(m=>`<div class="item"><div><div class="title">${new Date(m.meal_date+'T00:00').toLocaleDateString('fr-FR')}</div><div class="muted">Midi : ${m.lunch||'—'} • Soir : ${m.dinner||'—'}</div></div><button class="smallbtn danger" onclick="delMeal('${m.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Aucun repas planifié.</div>';
+ groceriesList.innerHTML=groceries.map(g=>`<div class="item"><div class="check"><input type="checkbox" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${g.name}</div><span class="pill">${g.category}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Liste vide.</div>';
+ const inc=month.filter(x=>x.entry_type==='income').reduce((s,x)=>s+Number(x.amount),0);
+ budgetTotals.innerHTML=`<div class="row"><div><div class="muted">Revenus du mois</div><h2 style="color:var(--green)">${euro(inc)}</h2></div><div><div class="muted">Dépenses du mois</div><h2 style="color:var(--red)">${euro(exp)}</h2></div></div>`;
+ budgetList.innerHTML=budget.map(b=>`<div class="item"><div><div class="title">${b.label}</div><div class="muted">${new Date(b.entry_date+'T00:00').toLocaleDateString('fr-FR')}</div></div><div><b style="color:${b.entry_type==='income'?'var(--green)':'var(--red)'}">${b.entry_type==='income'?'+':'-'}${euro(b.amount)}</b><br><button class="smallbtn danger" onclick="delBudget('${b.id}')">Suppr.</button></div></div>`).join('')||'<div class="muted">Aucun mouvement.</div>';
+ membersList.innerHTML=members.map(m=>`<div class="item"><div><div class="title">${m.profiles?.display_name||m.profiles?.email||'Membre'}</div><div class="muted">${m.role==='owner'?'Administrateur':'Membre'}</div></div></div>`).join('');
+}
+
+
+let pendingAiActions = [];
+
+function aiBusy(el, text){
+  el.innerHTML = `<div class="notice"><span class="spinner"></span>${text}</div>`;
+}
+function normalizeCategory(c){
+  const allowed=['Fruits & légumes','Frais','Épicerie','Boissons','Hygiène','Bébé','Maison','Autre'];
+  return allowed.includes(c)?c:'Autre';
+}
+function currentAiContext(){
+  return {
+    upcoming_events: events.slice(0,8).map(e=>({title:e.title,date:e.event_date,time:e.event_time,person:e.person})),
+    open_tasks: tasks.filter(t=>!t.is_done).slice(0,10).map(t=>({title:t.title,assigned_to:t.assigned_to})),
+    groceries: groceries.filter(g=>!g.is_done).slice(0,20).map(g=>g.name),
+    planned_meals: meals.slice(0,8).map(m=>({date:m.meal_date,lunch:m.lunch,dinner:m.dinner}))
+  };
+}
+async function callFamiliAi(payload){
+  const { data, error } = await sb.functions.invoke('famili-ai', { body: payload });
+  if(error) throw error;
+  if(data?.error) throw new Error(data.error);
+  return data?.result;
+}
+async function generateMealPlan(){
+  aiPreview.classList.add('hidden');
+  aiBusy(mealAiStatus,'Famili prépare vos menus…');
+  try{
+    const result=await callFamiliAi({
+      mode:'meal_plan', household_id:household.id,
+      people:aiPeople.value.trim(), days:Number(aiDays.value||5),
+      budget:aiBudget.value.trim(), preferences:aiPreferences.value.trim(),
+      exclusions:aiExclusions.value.trim(),
+      current_date:new Date().toISOString().slice(0,10)
+    });
+    const actions=[];
+    for(const d of (result.days||[])) actions.push({type:'add_meal',date:d.date,lunch:d.lunch||null,dinner:d.dinner||null});
+    for(const g of (result.groceries||[])) actions.push({type:'add_grocery',name:[g.name,g.quantity].filter(Boolean).join(' — '),category:normalizeCategory(g.category)});
+    pendingAiActions=actions;
+    aiReply.textContent=result.summary||'Voici la proposition de Famili.';
+    renderAiActions(); aiPreview.classList.remove('hidden');
+    mealAiStatus.innerHTML='<div class="notice ok">Proposition générée. Vérifiez-la avant validation.</div>';
+    aiPreview.scrollIntoView({behavior:'smooth'});
+  }catch(e){
+    console.error(e);
+    mealAiStatus.innerHTML='<div class="notice err">Impossible de générer les menus pour le moment.</div>';
+  }
+}
+async function askFamili(){
+  const prompt=assistantPrompt.value.trim(); if(!prompt)return;
+  aiPreview.classList.add('hidden');
+  aiBusy(assistantStatus,'Famili analyse votre demande…');
+  try{
+    const result=await callFamiliAi({
+      mode:'assistant', household_id:household.id, message:prompt,
+      current_date:new Date().toISOString().slice(0,10), context:currentAiContext()
+    });
+    pendingAiActions=Array.isArray(result.actions)?result.actions:[];
+    aiReply.textContent=result.reply||'Voici ce que je vous propose.';
+    renderAiActions(); aiPreview.classList.remove('hidden');
+    assistantStatus.innerHTML=pendingAiActions.length
+      ? '<div class="notice ok">Demande comprise. Confirmez les actions ci-dessous.</div>'
+      : '<div class="notice">Famili a besoin d’une précision avant d’agir.</div>';
+    aiPreview.scrollIntoView({behavior:'smooth'});
+  }catch(e){
+    console.error(e);
+    assistantStatus.innerHTML='<div class="notice err">Assistant Famili indisponible pour le moment.</div>';
+  }
+}
+function actionLabel(a){
+  if(a.type==='add_grocery') return `🛒 Course : ${a.name||'Article'}${a.category?' • '+a.category:''}`;
+  if(a.type==='add_task') return `✅ Tâche : ${a.title||'Tâche'}${a.assigned_to?' • '+a.assigned_to:''}`;
+  if(a.type==='add_event') return `📅 Événement : ${a.title||'Événement'}${a.date?' • '+a.date:''}${a.time?' à '+a.time:''}`;
+  if(a.type==='add_meal') return `🍽️ Repas : ${a.date||''}${a.lunch?' • Midi : '+a.lunch:''}${a.dinner?' • Soir : '+a.dinner:''}`;
+  return 'Action';
+}
+function renderAiActions(){
+  aiActions.innerHTML=pendingAiActions.length
+    ? pendingAiActions.map((a,i)=>`<div class="ai-action"><div class="title">${actionLabel(a)}</div><button class="smallbtn danger" style="margin-top:8px" onclick="removeAiAction(${i})">Retirer</button></div>`).join('')
+    : '<div class="muted">Aucune action à appliquer.</div>';
+}
+function removeAiAction(i){ pendingAiActions.splice(i,1); renderAiActions(); }
+function cancelAiActions(){ pendingAiActions=[]; aiPreview.classList.add('hidden'); }
+
+async function confirmAiActions(btn){
+  if(!pendingAiActions.length){ aiPreview.classList.add('hidden'); return; }
+  btn.disabled=true; btn.textContent='Ajout en cours…';
+  try{
+    for(const a of pendingAiActions){
+      if(a.type==='add_grocery' && a.name){
+        const {error}=await sb.from('groceries').insert({household_id:household.id,name:String(a.name).slice(0,160),category:normalizeCategory(a.category)}); if(error) throw error;
+      } else if(a.type==='add_task' && a.title){
+        const repeat=['none','daily','weekly'].includes(a.repeat_rule)?a.repeat_rule:'none';
+        const {error}=await sb.from('family_tasks').insert({household_id:household.id,title:String(a.title).slice(0,160),assigned_to:a.assigned_to||null,repeat_rule:repeat}); if(error) throw error;
+      } else if(a.type==='add_event' && a.title && a.date){
+        const {error}=await sb.from('family_events').insert({household_id:household.id,title:String(a.title).slice(0,160),event_date:a.date,event_time:a.time||null,person:a.person||null}); if(error) throw error;
+      } else if(a.type==='add_meal' && a.date){
+        const {error}=await sb.from('meals').upsert({household_id:household.id,meal_date:a.date,lunch:a.lunch||null,dinner:a.dinner||null,created_by:user.id},{onConflict:'household_id,meal_date'}); if(error) throw error;
+      }
+    }
+    pendingAiActions=[]; aiPreview.classList.add('hidden'); assistantPrompt.value='';
+    await loadAll(); alert('Les éléments ont été ajoutés à Famili.');
+  }catch(e){ console.error(e); alert("Une erreur est survenue pendant l'ajout."); }
+  finally{ btn.disabled=false; btn.textContent='Confirmer et ajouter'; }
+}
+
+
+sb.auth.onAuthStateChange(()=>loadState());
+loadState();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
