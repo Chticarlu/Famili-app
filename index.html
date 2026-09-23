@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Famili V5.2 Final -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -8,7 +9,7 @@
 <link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Famili">
-<title>Famili Premium Sync</title>
+<title>Famili</title>
 <style>
 :root{--bg:#f5f6fa;--card:#fff;--text:#17181c;--muted:#777b86;--line:#e7e9f0;--accent:#6d5dfb;--accent2:#9b8cff;--soft:#f0eeff;--green:#159461;--red:#d84a4a;--shadow:0 12px 34px rgba(40,42,60,.08)}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:95px}
@@ -17,7 +18,7 @@
 .brand h1{margin:0;font-size:23px} .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
 .card{background:var(--card);border-radius:22px;padding:17px;box-shadow:var(--shadow);margin-bottom:14px} .hero{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-bottom:14px}
 .hero h2{margin:5px 0 7px;font-size:28px} .hero p{margin:0;opacity:.9}
-label{display:block;font-weight:800;font-size:13px;margin:11px 0 6px} input,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:14px;font:inherit;background:#fff}
+label{display:block;font-weight:800;font-size:13px;margin:11px 0 6px} input,select,textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:14px;font:inherit;background:#fff} textarea{min-height:84px;resize:vertical}.suggestions{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 2px}.suggestions button{border:0;background:var(--soft);color:#5447d9;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:800}
 button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12px 15px;font-weight:900;background:var(--accent);color:#fff;margin-top:11px} .btn.full{width:100%} .btn.secondary{background:var(--soft);color:#5447d9} .btn.danger{background:#fdecec;color:var(--red)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px} .muted{font-size:13px;color:var(--muted)} .notice{padding:10px 12px;border-radius:12px;margin-top:10px;background:#f1f2f6;font-size:13px} .notice.err{background:#fdecec;color:#9f3030} .notice.ok{background:#eaf8f1;color:#19704b}
 .tabs{display:grid;grid-template-columns:1fr 1fr;background:#eceef4;padding:4px;border-radius:14px;margin-bottom:14px} .tabs button{border:0;background:transparent;border-radius:11px;padding:10px;font-weight:800;color:var(--muted)} .tabs button.active{background:#fff;color:var(--text)}
@@ -25,10 +26,10 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 .item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)} .item:last-child{border-bottom:0} .title{font-weight:800} .pill{display:inline-block;background:var(--soft);color:#5447d9;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;margin-top:4px}
 .smallbtn{border:0;border-radius:10px;padding:7px 9px;font-size:11px;font-weight:800} .smallbtn.danger{background:#fdecec;color:var(--red)} .check{display:flex;gap:9px} .check input{width:auto;margin-top:3px}
 .section{display:none} .section.active{display:block} .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:10}
-.navin{max-width:820px;margin:auto;display:grid;grid-template-columns:repeat(8,1fr);gap:2px} .nav button{border:0;background:transparent;color:var(--muted);font-size:9px;padding:6px 2px;border-radius:11px} .nav button.active{background:var(--soft);color:#5447d9;font-weight:800} .nav .e{display:block;font-size:18px}
+.navin{max-width:820px;margin:auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px} .nav button{border:0;background:transparent;color:var(--muted);font-size:9px;padding:6px 2px;border-radius:11px} .nav button.active{background:var(--soft);color:#5447d9;font-weight:800} .nav .e{display:block;font-size:18px}
 .code{text-align:center;background:var(--soft);color:#5447d9;padding:14px;border-radius:16px;font-size:27px;font-weight:900;letter-spacing:3px;margin:10px 0}
 .topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pricehero{font-size:34px;font-weight:900}.ai-action{padding:12px;border:1px solid var(--line);border-radius:14px;margin:8px 0;background:#fafafe}.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:6px}@keyframes spin{to{transform:rotate(360deg)}}
+.pricehero{font-size:34px;font-weight:900}.ai-action{padding:12px;border:1px solid var(--line);border-radius:14px;margin:8px 0;background:#fafafe}.onboarding-step{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}.onboarding-step:last-child{border-bottom:0}.onboarding-dot{width:28px;height:28px;flex:0 0 28px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:#5447d9;font-weight:900}.onboarding-step.done .onboarding-dot{background:#eaf8f1;color:#19704b}.onboarding-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.onboarding-progress{height:7px;background:#eceef4;border-radius:999px;overflow:hidden;margin:10px 0 4px}.onboarding-progress>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .25s ease}.usagebar{height:9px;background:#eceef4;border-radius:999px;overflow:hidden;margin:8px 0}.usagebar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .25s ease}.statusbox{padding:12px;border-radius:14px;background:#fafafe;border:1px solid var(--line);margin-top:10px}.empty{padding:18px 10px;text-align:center}.empty .emoji{font-size:28px;margin-bottom:6px}.empty .title{margin-bottom:4px}.group-title{font-size:12px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 2px}.group-title:first-child{margin-top:0}.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:6px}@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:640px){.quickgrid{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -41,9 +42,17 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   <div class="hero"><h2>Votre famille, ensemble.</h2><p>Un seul espace partagé pour l'organisation du foyer.</p></div>
   <div class="card">
    <div class="tabs"><button id="loginTab" class="active" onclick="tab('login')">Connexion</button><button id="signupTab" onclick="tab('signup')">Créer un compte</button></div>
-   <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button></div>
+   <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button><button class="btn full secondary" onclick="requestPasswordReset()">Mot de passe oublié ?</button></div>
    <div id="signupBox" class="hidden"><label>Prénom</label><input id="signupName"><label>Email</label><input id="signupEmail" type="email"><label>Mot de passe</label><input id="signupPassword" type="password"><button class="btn full" onclick="signup()">Créer mon compte</button></div>
    <div id="authMsg"></div>
+   <div id="passwordRecoveryBox" class="hidden" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
+    <h3 style="margin-top:0">Créer un nouveau mot de passe</h3>
+    <p class="muted">Choisissez un mot de passe d’au moins 8 caractères.</p>
+    <label>Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password">
+    <label>Confirmer le mot de passe</label><input id="newPasswordConfirm" type="password" autocomplete="new-password">
+    <button class="btn full" onclick="updateRecoveredPassword()">Enregistrer le nouveau mot de passe</button>
+    <div id="recoveryMsg"></div>
+   </div>
   </div>
  </section>
 
@@ -94,7 +103,42 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   </div>
 
   <div id="home" class="section active">
+   <div id="onboardingCard" class="card hidden">
+    <div class="topline"><div><div class="muted">Premiers pas</div><h3 style="margin:3px 0 0">👋 Bienvenue dans Famili</h3></div><button class="smallbtn" onclick="dismissOnboarding()">Plus tard</button></div>
+    <p class="muted" style="margin-bottom:6px">Configurez votre foyer en quelques minutes.</p>
+    <div class="onboarding-progress"><div id="onboardingProgress"></div></div>
+    <div id="onboardingSteps"></div>
+   </div>
+   <div class="card">
+    <div class="topline"><div><div class="muted">Famili IA</div><h3 style="margin:3px 0 0">💬 Assistant Famili</h3></div><span class="pill">Beta</span></div>
+    <p class="muted">Demandez simplement ce que vous voulez organiser dans le foyer.</p>
+    <div class="suggestions">
+      <button onclick="prefillAssistant('Ajoute du lait et des couches à la liste de courses')">🛒 Ajouter des courses</button>
+      <button onclick="prefillAssistant('Ajoute une tâche pour ') ">✅ Créer une tâche</button>
+      <button onclick="prefillAssistant('Ajoute un rendez-vous ') ">📅 Ajouter un rendez-vous</button>
+    </div>
+    <label>Votre demande</label>
+    <textarea id="assistantPrompt" placeholder="Ex. Ajoute du lait aux courses et mets dentiste jeudi à 17h."></textarea>
+    <button class="btn full" onclick="askFamili()">Demander à Famili</button>
+    <div id="assistantStatus"></div>
+   </div>
+   <div class="card">
+    <div class="topline"><div><div class="muted">Aujourd’hui</div><h3 style="margin:3px 0 0">☀️ À faire aujourd’hui</h3></div><span class="pill" id="briefBadge">À jour</span></div>
+    <div id="todayBrief" style="margin-top:10px"></div>
+    <div class="suggestions" style="margin-top:12px">
+      <button onclick="go('planning')">📅 Voir le planning</button>
+      <button onclick="go('tasks')">✅ Voir les tâches</button>
+      <button onclick="go('groceries')">🛒 Voir les courses</button>
+    </div>
+   </div>
    <div class="card"><h3>À venir</h3><div id="homeEvents"></div></div>
+   <div id="aiPreview" class="card hidden">
+    <div class="topline"><h3 style="margin:0">À confirmer</h3><span class="pill">Aucune action automatique</span></div>
+    <div id="aiReply" class="muted" style="margin:10px 0"></div>
+    <div id="aiActions"></div>
+    <button class="btn full" onclick="confirmAiActions(this)">Confirmer et ajouter</button>
+    <button class="btn full secondary" onclick="cancelAiActions()">Annuler</button>
+   </div>
    <div class="card"><h3>Code du foyer</h3><div class="code" id="inviteCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
   </div>
 
@@ -109,8 +153,25 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   </div>
 
   <div id="meals" class="section">
-   <div class="card"><h2>Repas</h2><label>Date</label><input id="mealDate" type="date"><label>Midi</label><input id="mealLunch"><label>Soir</label><input id="mealDinner"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
-   <div class="card"><div id="mealsList"></div></div>
+   <div class="card">
+    <div class="topline"><div><div class="muted">Famili IA</div><h3 style="margin:3px 0 0">🍽️ Assistant repas</h3></div><span class="pill">Beta</span></div>
+    <p class="muted">Créez plusieurs jours de menus et la liste de courses associée.</p>
+    <label>Pour combien de personnes ?</label>
+    <input id="aiPeople" placeholder="Ex. 2 adultes + 1 enfant">
+    <div class="row">
+      <div><label>Nombre de jours</label><select id="aiDays"><option>3</option><option selected>5</option><option>7</option></select></div>
+      <div><label>Budget indicatif</label><input id="aiBudget" placeholder="Ex. 70 €"></div>
+    </div>
+    <label>Préférences</label>
+    <input id="aiPreferences" placeholder="Simple, rapide, familial…">
+    <label>Exclusions / allergies</label>
+    <input id="aiExclusions" placeholder="Ex. sans poisson, allergie arachide…">
+    <button class="btn full" onclick="generateMealPlan()">Générer mes menus</button>
+    <div id="mealAiStatus"></div>
+    <p class="muted" style="margin-bottom:0">Les menus et la liste de courses ne sont ajoutés qu’après votre confirmation.</p>
+   </div>
+   <div class="card"><h3>Ajouter un repas manuellement</h3><label>Date</label><input id="mealDate" type="date"><label>Midi</label><input id="mealLunch"><label>Soir</label><input id="mealDinner"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
+   <div class="card"><h3>Repas planifiés</h3><div id="mealsList"></div></div>
   </div>
 
   <div id="groceries" class="section">
@@ -124,51 +185,11 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   </div>
 
 
-  <div id="ai" class="section">
-   <div class="card">
-    <div class="topline"><div><div class="muted">Famili IA</div><h2 style="margin:3px 0 0">✨ Assistant intelligent</h2></div><span class="pill">Beta</span></div>
-    <p class="muted">L’IA propose des actions. Rien n’est ajouté sans votre confirmation.</p>
-   </div>
-
-   <div class="card">
-    <h3>🍽️ Menus IA</h3>
-    <label>Pour combien de personnes ?</label>
-    <input id="aiPeople" placeholder="Ex. 2 adultes + 1 enfant">
-    <div class="row">
-      <div><label>Nombre de jours</label><select id="aiDays"><option>3</option><option selected>5</option><option>7</option></select></div>
-      <div><label>Budget indicatif</label><input id="aiBudget" placeholder="Ex. 70 €"></div>
-    </div>
-    <label>Préférences</label>
-    <input id="aiPreferences" placeholder="Simple, rapide, familial…">
-    <label>Exclusions / allergies</label>
-    <input id="aiExclusions" placeholder="Ex. sans poisson, allergie arachide…">
-    <button class="btn full" onclick="generateMealPlan()">Générer mes menus</button>
-    <div id="mealAiStatus"></div>
-   </div>
-
-   <div class="card">
-    <h3>💬 Assistant Famili</h3>
-    <p class="muted">Exemple : « Ajoute du lait et des couches aux courses et mets dentiste jeudi à 17h. »</p>
-    <label>Votre demande</label>
-    <input id="assistantPrompt" placeholder="Que voulez-vous organiser ?">
-    <button class="btn full" onclick="askFamili()">Demander à Famili</button>
-    <div id="assistantStatus"></div>
-   </div>
-
-   <div id="aiPreview" class="card hidden">
-    <div class="topline"><h3 style="margin:0">À confirmer</h3><span class="pill">Aucune action automatique</span></div>
-    <div id="aiReply" class="muted" style="margin:10px 0"></div>
-    <div id="aiActions"></div>
-    <button class="btn full" onclick="confirmAiActions(this)">Confirmer et ajouter</button>
-    <button class="btn full secondary" onclick="cancelAiActions()">Annuler</button>
-   </div>
-  </div>
-
   <div id="family" class="section">
    <div class="card topline"><div><div class="muted">Foyer</div><b id="familyHH"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
-   <div class="card"><h3>Membres</h3><div id="membersList"></div></div>
+   <div class="card"><h3>Membres</h3><div id="membersList"></div><div id="membershipActions"></div></div>
    <div class="card"><h3>Invitation</h3><div class="code" id="familyCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
-   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button><button id="syncBillingBtn2" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button></div>
+   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 100</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button><button id="syncBillingBtn2" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button></div>
   </div>
  </section>
 </div>
@@ -180,25 +201,63 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 <button onclick="go('meals',this)"><span class="e">🍽️</span>Repas</button>
 <button onclick="go('groceries',this)"><span class="e">🛒</span>Courses</button>
 <button onclick="go('budget',this)"><span class="e">💶</span>Budget</button>
-<button onclick="go('ai',this)"><span class="e">✨</span>IA</button><button onclick="go('family',this)"><span class="e">👨‍👩‍👧</span>Famille</button>
+<button onclick="go('family',this)"><span class="e">👨‍👩‍👧</span>Famille</button>
 </div></div>
 
 <script>
 const sb = supabase.createClient("https://mugtbxugqevnxoynkrfz.supabase.co", "sb_publishable_29N94MqLtk6ILcdM8PvCxg_M7ElVTYt");
-let user=null, household=null, householdRole=null, subscription=null, channel=null;
-let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[];
+let user=null, household=null, householdRole=null, subscription=null, channel=null, recoveryMode=false;
+let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[],aiUsage=null;
 
 function notice(el,text,type=''){el.innerHTML=`<div class="notice ${type}">${text}</div>`}
 function tab(x){loginTab.classList.toggle('active',x==='login');signupTab.classList.toggle('active',x==='signup');loginBox.classList.toggle('hidden',x!=='login');signupBox.classList.toggle('hidden',x!=='signup');authMsg.innerHTML=''}
 async function signup(){const name=signupName.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value;if(!name||!email||password.length<8)return notice(authMsg,'Prénom, email et mot de passe de 8 caractères minimum.','err');const{data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name}}});if(error)return notice(authMsg,error.message,'err');notice(authMsg,data.session?'Compte créé.':'Compte créé. Vérifiez votre email si une confirmation est demandée.','ok')}
-async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,error.message,'err')}
-async function logout(){await sb.auth.signOut()}
+async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,'Email ou mot de passe incorrect.','err')}
+async function requestPasswordReset(){
+ const email=loginEmail.value.trim();
+ if(!email)return notice(authMsg,'Saisissez d’abord votre adresse e-mail.','err');
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+ if(error)return notice(authMsg,'Impossible d’envoyer le lien pour le moment. Réessayez dans quelques instants.','err');
+ notice(authMsg,'Un e-mail de réinitialisation vient de vous être envoyé. Pensez à vérifier vos courriers indésirables.','ok');
+}
+function showPasswordRecovery(){
+ recoveryMode=true;
+ authView.classList.remove('hidden');householdView.classList.add('hidden');billingView.classList.add('hidden');appView.classList.add('hidden');nav.classList.add('hidden');
+ loginBox.classList.add('hidden');signupBox.classList.add('hidden');document.querySelector('.tabs').classList.add('hidden');passwordRecoveryBox.classList.remove('hidden');authMsg.innerHTML='';
+}
+async function updateRecoveredPassword(){
+ const p=newPassword.value,p2=newPasswordConfirm.value;
+ if(p.length<8)return notice(recoveryMsg,'Le mot de passe doit contenir au moins 8 caractères.','err');
+ if(p!==p2)return notice(recoveryMsg,'Les deux mots de passe ne correspondent pas.','err');
+ const {error}=await sb.auth.updateUser({password:p});
+ if(error)return notice(recoveryMsg,'Impossible de modifier le mot de passe. Le lien a peut-être expiré.','err');
+ notice(recoveryMsg,'Mot de passe modifié. Vous allez pouvoir vous reconnecter.','ok');
+ setTimeout(async()=>{await sb.auth.signOut();recoveryMode=false;passwordRecoveryBox.classList.add('hidden');document.querySelector('.tabs').classList.remove('hidden');loginBox.classList.remove('hidden');loginTab.classList.add('active');signupTab.classList.remove('active');newPassword.value='';newPasswordConfirm.value='';await loadState();notice(authMsg,'Mot de passe modifié avec succès. Connectez-vous avec votre nouveau mot de passe.','ok');},900);
+}
+async function logout(){recoveryMode=false;await sb.auth.signOut()}
 async function createHH(){const name=hhName.value.trim();if(!name)return notice(hhMsg,'Ajoutez un nom de foyer.','err');const{error}=await sb.rpc('create_household',{p_name:name});if(error)return notice(hhMsg,error.message,'err');await loadState()}
 async function joinHH(){const code=joinCode.value.trim().toUpperCase();const{error}=await sb.rpc('join_household_by_code',{p_code:code});if(error)return notice(hhMsg,'Code invalide ou foyer inaccessible.','err');await loadState()}
-function go(id,btn){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn){document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}window.scrollTo(0,0)}
+async function leaveHousehold(){if(householdRole==='owner')return;if(!confirm('Quitter ce foyer ? Vous perdrez l’accès à ses données partagées.'))return;const{error}=await sb.rpc('leave_household',{p_household_id:household.id});if(error){alert('Impossible de quitter le foyer pour le moment.');return;}if(channel){sb.removeChannel(channel);channel=null;}household=null;householdRole=null;subscription=null;await loadState();}
+function go(id,btn){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');const navButtons=[...document.querySelectorAll('.nav button')];navButtons.forEach(x=>x.classList.remove('active'));const targetBtn=btn||navButtons.find(x=>(x.getAttribute('onclick')||'').includes(`go('${id}'`));if(targetBtn)targetBtn.classList.add('active');window.scrollTo(0,0)}
 async function copyCode(){await navigator.clipboard.writeText(household.invite_code);alert('Code copié : '+household.invite_code)}
+function onboardingKey(){return household?`famili-onboarding-hidden-${household.id}`:'famili-onboarding-hidden'}
+function dismissOnboarding(){localStorage.setItem(onboardingKey(),'1');onboardingCard.classList.add('hidden')}
+function renderOnboarding(){
+ if(!household || localStorage.getItem(onboardingKey())==='1'){onboardingCard.classList.add('hidden');return}
+ const hasMember=members.length>1;
+ const hasFirstContent=events.length+tasks.length+meals.length+groceries.length+budget.length>0;
+ const doneCount=1+(hasMember?1:0)+(hasFirstContent?1:0);
+ if(doneCount===3){localStorage.setItem(onboardingKey(),'1');onboardingCard.classList.add('hidden');return}
+ onboardingCard.classList.remove('hidden');
+ onboardingProgress.style.width=`${Math.round(doneCount/3*100)}%`;
+ onboardingSteps.innerHTML=`
+  <div class="onboarding-step done"><div class="onboarding-dot">✓</div><div><div class="title">Foyer créé</div><div class="muted">${household.name} est prêt à être utilisé.</div></div></div>
+  <div class="onboarding-step ${hasMember?'done':''}"><div class="onboarding-dot">${hasMember?'✓':'2'}</div><div style="flex:1"><div class="title">Inviter un membre</div><div class="muted">${hasMember?'Votre foyer est déjà partagé.':'Partagez le code du foyer avec votre conjoint ou un proche.'}</div>${hasMember?'':`<div class="onboarding-actions"><button class="smallbtn" onclick="copyCode()">Copier le code</button><button class="smallbtn" onclick="go('family')">Voir la famille</button></div>`}</div></div>
+  <div class="onboarding-step ${hasFirstContent?'done':''}"><div class="onboarding-dot">${hasFirstContent?'✓':'3'}</div><div style="flex:1"><div class="title">Ajouter votre premier élément</div><div class="muted">${hasFirstContent?'Votre organisation a commencé.':'Ajoutez un rendez-vous ou demandez à Famili de préparer vos premiers repas.'}</div>${hasFirstContent?'':`<div class="onboarding-actions"><button class="smallbtn" onclick="go('planning');setTimeout(()=>eventTitle.focus(),50)">Ajouter un événement</button><button class="smallbtn" onclick="go('meals')">Créer des menus IA</button></div>`}</div></div>`;
+}
 
 async function loadState(){
+ if(recoveryMode)return;
  const{data:{session}}=await sb.auth.getSession();user=session?.user||null;
  authView.classList.toggle('hidden',!!user);
  householdView.classList.add('hidden');billingView.classList.add('hidden');appView.classList.add('hidden');nav.classList.add('hidden');
@@ -225,6 +284,9 @@ async function loadState(){
  }
  appView.classList.remove('hidden');nav.classList.remove('hidden');
  today.textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const defaultDate=new Date().toISOString().slice(0,10);
+ if(!eventDate.value) eventDate.value=defaultDate;
+ if(!mealDate.value) mealDate.value=defaultDate;
  await loadAll(); subscribeRealtime();
  if(location.search.includes('checkout=')) history.replaceState({},'',location.pathname);
 }
@@ -245,10 +307,17 @@ function renderSubscriptionState(){
  }
  const statusMap={trialing:'Essai gratuit',active:'Actif',past_due:'Paiement en retard',canceled:'Résilié',unpaid:'Impayé',incomplete:'Incomplet',incomplete_expired:'Expiré',paused:'En pause',none:'Non actif'};
  let txt=statusMap[subscription.status]||subscription.status;
- if(subscription.status==='trialing' && subscription.trial_end) txt+=` jusqu’au ${new Date(subscription.trial_end).toLocaleDateString('fr-FR')}`;
- else if(subscription.current_period_end) txt+=` • prochaine échéance ${new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}`;
- if(subscription.cancel_at_period_end) txt+=' • résiliation programmée';
- subscriptionInfo.textContent=txt;
+ if(subscription.cancel_at_period_end){
+   const accessEnd=subscription.current_period_end||subscription.trial_end;
+   txt=accessEnd
+     ? `Résiliation programmée — accès jusqu’au ${new Date(accessEnd).toLocaleDateString('fr-FR')}`
+     : 'Résiliation programmée';
+ }else if(subscription.status==='trialing' && subscription.trial_end){
+   txt+=` jusqu’au ${new Date(subscription.trial_end).toLocaleDateString('fr-FR')}`;
+ }else if(subscription.current_period_end){
+   txt+=` • prochaine échéance ${new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}`;
+ }
+ subscriptionInfo.innerHTML=subscription.cancel_at_period_end?`<div class="notice">⚠️ ${txt}</div>`:txt;
  manageBillingBtn.classList.toggle('hidden',householdRole!=='owner' || !subscription.stripe_customer_id);
 }
 
@@ -316,15 +385,17 @@ async function waitForSubscriptionActivation(){
 
 async function loadAll(){
  const h=household.id;
- const [a,b,c,d,e,f]=await Promise.all([
+ const monthStart=new Date();monthStart.setDate(1);const monthKey=monthStart.toISOString().slice(0,10);
+ const [a,b,c,d,e,f,g]=await Promise.all([
   sb.from('family_events').select('*').eq('household_id',h).order('event_date'),
   sb.from('family_tasks').select('*').eq('household_id',h).order('created_at'),
   sb.from('meals').select('*').eq('household_id',h).order('meal_date'),
   sb.from('groceries').select('*').eq('household_id',h).order('created_at'),
   sb.from('budget_entries').select('*').eq('household_id',h).order('entry_date',{ascending:false}),
-  sb.from('household_members').select('user_id,role,profiles(display_name,email)').eq('household_id',h)
+  sb.from('household_members').select('user_id,role,profiles(display_name,email)').eq('household_id',h),
+  sb.from('ai_usage_monthly').select('request_count').eq('household_id',h).eq('month_start',monthKey).maybeSingle()
  ]);
- events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];
+ events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];aiUsage=g.data||null;
  render();
 }
 
@@ -340,36 +411,101 @@ function subscribeRealtime(){
 }
 
 async function addEvent(){if(!eventTitle.value.trim()||!eventDate.value)return;await sb.from('family_events').insert({household_id:household.id,title:eventTitle.value.trim(),event_date:eventDate.value,event_time:eventTime.value||null,person:eventPerson.value.trim()||null});eventTitle.value='';eventPerson.value='';await loadAll()}
-async function delEvent(id){await sb.from('family_events').delete().eq('id',id);await loadAll()}
+async function delEvent(id){if(!confirm('Supprimer cet événement ?'))return;await sb.from('family_events').delete().eq('id',id);await loadAll()}
 async function addTask(){if(!taskTitle.value.trim())return;await sb.from('family_tasks').insert({household_id:household.id,title:taskTitle.value.trim(),assigned_to:taskPerson.value.trim()||null,repeat_rule:taskRepeat.value});taskTitle.value='';taskPerson.value='';await loadAll()}
 async function toggleTask(id,v){await sb.from('family_tasks').update({is_done:v}).eq('id',id);await loadAll()}
-async function delTask(id){await sb.from('family_tasks').delete().eq('id',id);await loadAll()}
+async function delTask(id){if(!confirm('Supprimer cette tâche ?'))return;await sb.from('family_tasks').delete().eq('id',id);await loadAll()}
 async function saveMeal(){if(!mealDate.value)return;await sb.from('meals').upsert({household_id:household.id,meal_date:mealDate.value,lunch:mealLunch.value.trim()||null,dinner:mealDinner.value.trim()||null,created_by:user.id},{onConflict:'household_id,meal_date'});mealLunch.value='';mealDinner.value='';await loadAll()}
-async function delMeal(id){await sb.from('meals').delete().eq('id',id);await loadAll()}
+async function delMeal(id){if(!confirm('Supprimer ce repas ?'))return;await sb.from('meals').delete().eq('id',id);await loadAll()}
 async function addGrocery(){if(!groceryName.value.trim())return;await sb.from('groceries').insert({household_id:household.id,name:groceryName.value.trim(),category:groceryCategory.value});groceryName.value='';await loadAll()}
 async function toggleGrocery(id,v){await sb.from('groceries').update({is_done:v}).eq('id',id);await loadAll()}
-async function delGrocery(id){await sb.from('groceries').delete().eq('id',id);await loadAll()}
+async function delGrocery(id){if(!confirm('Supprimer cet article ?'))return;await sb.from('groceries').delete().eq('id',id);await loadAll()}
 async function addBudget(){const a=parseFloat(budgetAmount.value);if(!budgetLabel.value.trim()||!a)return;await sb.from('budget_entries').insert({household_id:household.id,label:budgetLabel.value.trim(),amount:a,entry_type:budgetType.value});budgetLabel.value='';budgetAmount.value='';await loadAll()}
-async function delBudget(id){await sb.from('budget_entries').delete().eq('id',id);await loadAll()}
+async function delBudget(id){if(!confirm('Supprimer ce mouvement du budget ?'))return;await sb.from('budget_entries').delete().eq('id',id);await loadAll()}
 
 function euro(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0)}
+function emptyState(emoji,title,text,actionLabel='',action=''){
+ return `<div class="empty"><div class="emoji">${emoji}</div><div class="title">${title}</div><div class="muted">${text}</div>${actionLabel?`<button class="smallbtn" style="margin-top:10px" onclick="${action}">${actionLabel}</button>`:''}</div>`;
+}
+function eventItem(e){
+ return `<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''} ${e.person?'• '+e.person:''}</div></div><button class="smallbtn danger" onclick="delEvent('${e.id}')">Suppr.</button></div>`;
+}
 function render(){
+ renderOnboarding();
  const now=new Date(), today0=new Date();today0.setHours(0,0,0,0);
  const future=events.filter(e=>new Date(e.event_date+'T00:00')>=today0);
  const openTasks=tasks.filter(x=>!x.is_done), openGroceries=groceries.filter(x=>!x.is_done);
  const mk=now.toISOString().slice(0,7);const month=budget.filter(x=>x.entry_date.slice(0,7)===mk);const exp=month.filter(x=>x.entry_type==='expense').reduce((s,x)=>s+Number(x.amount),0);
  nEvents.textContent=future.length;nTasks.textContent=openTasks.length;nGroceries.textContent=openGroceries.length;nBudget.textContent=euro(exp);
- summary.textContent=`${future.length+openTasks.length+openGroceries.length} éléments à suivre dans le foyer.`;
- homeEvents.innerHTML=future.slice(0,5).map(e=>`<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''}</div></div></div>`).join('')||'<div class="muted">Rien de prévu.</div>';
- eventsList.innerHTML=future.map(e=>`<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''} ${e.person?'• '+e.person:''}</div></div><button class="smallbtn danger" onclick="delEvent('${e.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Aucun événement.</div>';
- tasksList.innerHTML=tasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${t.title}</div><div class="muted">${t.assigned_to||'Non attribuée'}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Aucune tâche.</div>';
- mealsList.innerHTML=meals.map(m=>`<div class="item"><div><div class="title">${new Date(m.meal_date+'T00:00').toLocaleDateString('fr-FR')}</div><div class="muted">Midi : ${m.lunch||'—'} • Soir : ${m.dinner||'—'}</div></div><button class="smallbtn danger" onclick="delMeal('${m.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Aucun repas planifié.</div>';
- groceriesList.innerHTML=groceries.map(g=>`<div class="item"><div class="check"><input type="checkbox" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${g.name}</div><span class="pill">${g.category}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`).join('')||'<div class="muted">Liste vide.</div>';
+ const totalToFollow=future.length+openTasks.length+openGroceries.length;
+ summary.textContent=totalToFollow?`${totalToFollow} élément${totalToFollow>1?'s':''} à suivre dans le foyer.`:'Tout est à jour pour le moment.';
+
+ const todayKey=today0.toISOString().slice(0,10);
+ const todayEvents=future.filter(e=>e.event_date===todayKey);
+ const todayMeal=meals.find(m=>m.meal_date===todayKey);
+ const nextEvent=future[0];
+ const brief=[];
+ if(todayEvents.length){
+   brief.push(`<div class="item"><div><div class="title">📅 ${todayEvents.length} événement${todayEvents.length>1?'s':''} aujourd’hui</div><div class="muted">${todayEvents.slice(0,2).map(e=>`${e.title}${e.event_time?' à '+e.event_time:''}`).join(' • ')}</div></div></div>`);
+ }else if(nextEvent){
+   brief.push(`<div class="item"><div><div class="title">📅 Prochain rendez-vous</div><div class="muted">${nextEvent.title} • ${new Date(nextEvent.event_date+'T00:00').toLocaleDateString('fr-FR')}${nextEvent.event_time?' à '+nextEvent.event_time:''}</div></div></div>`);
+ }else{
+   brief.push('<div class="item"><div><div class="title">📅 Planning calme</div><div class="muted">Aucun événement à venir.</div></div></div>');
+ }
+
+ if(openTasks.length){
+   brief.push(`<div class="item"><div><div class="title">✅ ${openTasks.length} tâche${openTasks.length>1?'s':''} à faire</div><div class="muted">${openTasks.slice(0,2).map(t=>t.title).join(' • ')}</div></div></div>`);
+ }else{
+   brief.push('<div class="item"><div><div class="title">✅ Tâches terminées</div><div class="muted">Aucune tâche en attente.</div></div></div>');
+ }
+
+ if(todayMeal && (todayMeal.lunch||todayMeal.dinner)){
+   brief.push(`<div class="item"><div><div class="title">🍽️ Repas du jour</div><div class="muted">Midi : ${todayMeal.lunch||'—'} • Soir : ${todayMeal.dinner||'—'}</div></div></div>`);
+ }else{
+   brief.push('<div class="item"><div><div class="title">🍽️ Repas non planifié</div><div class="muted">Vous pouvez demander une idée à l’Assistant repas.</div></div><button class="smallbtn" onclick="go(\'meals\')">Planifier</button></div>');
+ }
+
+ if(openGroceries.length){
+   brief.push(`<div class="item"><div><div class="title">🛒 ${openGroceries.length} article${openGroceries.length>1?'s':''} à acheter</div><div class="muted">${openGroceries.slice(0,3).map(g=>g.name).join(' • ')}</div></div></div>`);
+ }else{
+   brief.push('<div class="item"><div><div class="title">🛒 Courses à jour</div><div class="muted">Aucun article en attente.</div></div></div>');
+ }
+ todayBrief.innerHTML=brief.join('');
+ briefBadge.textContent=totalToFollow?'À suivre':'À jour';
+
+ homeEvents.innerHTML=future.slice(0,5).map(e=>`<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''}</div></div></div>`).join('')||emptyState('📅','Rien de prévu','Votre prochain événement apparaîtra ici.','Ajouter un événement',"go('planning')");
+ const weekEnd=new Date(today0);weekEnd.setDate(weekEnd.getDate()+7);
+ const todayEventsList=future.filter(e=>e.event_date===todayKey);
+ const weekEvents=future.filter(e=>{const d=new Date(e.event_date+'T00:00');return e.event_date!==todayKey && d<weekEnd;});
+ const laterEvents=future.filter(e=>new Date(e.event_date+'T00:00')>=weekEnd);
+ const eventGroups=[];
+ if(todayEventsList.length) eventGroups.push(`<div class="group-title">Aujourd’hui</div>${todayEventsList.map(eventItem).join('')}`);
+ if(weekEvents.length) eventGroups.push(`<div class="group-title">Cette semaine</div>${weekEvents.map(eventItem).join('')}`);
+ if(laterEvents.length) eventGroups.push(`<div class="group-title">Plus tard</div>${laterEvents.map(eventItem).join('')}`);
+ eventsList.innerHTML=eventGroups.join('')||emptyState('🗓️','Planning vide','Ajoutez votre premier rendez-vous ou événement.','Créer un événement',"eventTitle.focus()");
+ const sortedTasks=[...tasks].sort((a,b)=>Number(a.is_done)-Number(b.is_done));
+ tasksList.innerHTML=sortedTasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${t.title}</div><div class="muted">${t.assigned_to||'Non attribuée'}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||emptyState('✅','Aucune tâche','Tout est calme pour le moment.','Ajouter une tâche',"taskTitle.focus()");
+ mealsList.innerHTML=meals.map(m=>`<div class="item"><div><div class="title">${new Date(m.meal_date+'T00:00').toLocaleDateString('fr-FR')}</div><div class="muted">Midi : ${m.lunch||'—'} • Soir : ${m.dinner||'—'}</div></div><button class="smallbtn danger" onclick="delMeal('${m.id}')">Suppr.</button></div>`).join('')||emptyState('🍽️','Aucun repas planifié','L’Assistant repas peut préparer plusieurs jours en quelques secondes.','Créer des menus avec l’IA',"aiPeople.focus()");
+ const groceryOrder=['Fruits & légumes','Frais','Épicerie','Boissons','Hygiène','Bébé','Maison','Autre'];
+ const sortedGroceries=[...groceries].sort((a,b)=>Number(a.is_done)-Number(b.is_done) || groceryOrder.indexOf(a.category)-groceryOrder.indexOf(b.category) || a.name.localeCompare(b.name,'fr'));
+ let lastCategory=null; const groceryHtml=[];
+ for(const g of sortedGroceries){
+   if(!g.is_done && g.category!==lastCategory){groceryHtml.push(`<div class="group-title">${g.category}</div>`);lastCategory=g.category;}
+   if(g.is_done && lastCategory!=='__done__'){groceryHtml.push('<div class="group-title">Déjà acheté</div>');lastCategory='__done__';}
+   groceryHtml.push(`<div class="item"><div class="check"><input type="checkbox" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${g.name}</div><span class="pill">${g.category}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`);
+ }
+ groceriesList.innerHTML=groceryHtml.join('')||emptyState('🛒','Liste de courses vide','Ajoutez un article ou demandez-le directement à Assistant Famili.','Ajouter un article',"groceryName.focus()");
  const inc=month.filter(x=>x.entry_type==='income').reduce((s,x)=>s+Number(x.amount),0);
  budgetTotals.innerHTML=`<div class="row"><div><div class="muted">Revenus du mois</div><h2 style="color:var(--green)">${euro(inc)}</h2></div><div><div class="muted">Dépenses du mois</div><h2 style="color:var(--red)">${euro(exp)}</h2></div></div>`;
- budgetList.innerHTML=budget.map(b=>`<div class="item"><div><div class="title">${b.label}</div><div class="muted">${new Date(b.entry_date+'T00:00').toLocaleDateString('fr-FR')}</div></div><div><b style="color:${b.entry_type==='income'?'var(--green)':'var(--red)'}">${b.entry_type==='income'?'+':'-'}${euro(b.amount)}</b><br><button class="smallbtn danger" onclick="delBudget('${b.id}')">Suppr.</button></div></div>`).join('')||'<div class="muted">Aucun mouvement.</div>';
- membersList.innerHTML=members.map(m=>`<div class="item"><div><div class="title">${m.profiles?.display_name||m.profiles?.email||'Membre'}</div><div class="muted">${m.role==='owner'?'Administrateur':'Membre'}</div></div></div>`).join('');
-}
+ budgetList.innerHTML=budget.map(b=>`<div class="item"><div><div class="title">${b.label}</div><div class="muted">${new Date(b.entry_date+'T00:00').toLocaleDateString('fr-FR')}</div></div><div><b style="color:${b.entry_type==='income'?'var(--green)':'var(--red)'}">${b.entry_type==='income'?'+':'-'}${euro(b.amount)}</b><br><button class="smallbtn danger" onclick="delBudget('${b.id}')">Suppr.</button></div></div>`).join('')||emptyState('💶','Aucun mouvement','Ajoutez une dépense ou un revenu pour commencer le suivi.','Ajouter un mouvement',"budgetLabel.focus()");
+ membersList.innerHTML=members.map(m=>`<div class="item"><div><div class="title">${m.profiles?.display_name||m.profiles?.email||'Membre'}</div><div class="muted">${m.role==='owner'?'Propriétaire du foyer':'Membre'}</div></div></div>`).join('');
+ const used=Math.max(0,Number(aiUsage?.request_count||0)), limit=100, pct=Math.min(100,Math.round((used/limit)*100));
+ aiUsageText.textContent=`${used} / ${limit}`;aiUsageBar.style.width=`${pct}%`;
+ aiUsageHint.textContent=used>=limit?'Quota mensuel atteint. Il se réinitialisera le mois prochain.':used>=80?`Il reste ${limit-used} requête${limit-used>1?'s':''} IA ce mois-ci.`:'Le quota est partagé par tout le foyer.';
+ membershipActions.innerHTML=householdRole==='owner'
+   ? '<div class="notice">Vous êtes le propriétaire de ce foyer.</div>'
+   : '<button class="btn full danger" onclick="leaveHousehold()">Quitter le foyer</button>';
+} 
 
 
 let pendingAiActions = [];
@@ -391,11 +527,22 @@ function currentAiContext(){
 }
 async function callFamiliAi(payload){
   const { data, error } = await sb.functions.invoke('famili-ai', { body: payload });
-  if(error) throw error;
-  if(data?.error) throw new Error(data.error);
+  if(error){
+    let detail=null;
+    try{ detail=await error.context?.json?.(); }catch(_){ }
+    const e=new Error(detail?.error||error.message||'AI request failed');
+    e.code=detail?.code||null;e.usage=detail?.usage||null;throw e;
+  }
+  if(data?.error){const e=new Error(data.error);e.code=data.code||null;e.usage=data.usage||null;throw e;}
   return data?.result;
 }
+function aiErrorText(e){
+  if(e?.code==='AI_QUOTA_REACHED') return 'Le quota IA mensuel du foyer est atteint. Il sera réinitialisé le mois prochain.';
+  if(e?.code==='SUBSCRIPTION_REQUIRED') return 'Famili IA nécessite un abonnement Premium actif.';
+  return 'Famili IA est temporairement indisponible. Réessayez dans quelques instants.';
+}
 async function generateMealPlan(){
+  document.getElementById('meals').appendChild(aiPreview);
   aiPreview.classList.add('hidden');
   aiBusy(mealAiStatus,'Famili prépare vos menus…');
   try{
@@ -416,11 +563,16 @@ async function generateMealPlan(){
     aiPreview.scrollIntoView({behavior:'smooth'});
   }catch(e){
     console.error(e);
-    mealAiStatus.innerHTML='<div class="notice err">Impossible de générer les menus pour le moment.</div>';
+    mealAiStatus.innerHTML=`<div class="notice err">${aiErrorText(e)}</div>`;
   }
+}
+function prefillAssistant(text){
+  assistantPrompt.value=text;
+  assistantPrompt.focus();
 }
 async function askFamili(){
   const prompt=assistantPrompt.value.trim(); if(!prompt)return;
+  document.getElementById('home').insertBefore(aiPreview, document.getElementById('home').children[2]);
   aiPreview.classList.add('hidden');
   aiBusy(assistantStatus,'Famili analyse votre demande…');
   try{
@@ -437,7 +589,7 @@ async function askFamili(){
     aiPreview.scrollIntoView({behavior:'smooth'});
   }catch(e){
     console.error(e);
-    assistantStatus.innerHTML='<div class="notice err">Assistant Famili indisponible pour le moment.</div>';
+    assistantStatus.innerHTML=`<div class="notice err">${aiErrorText(e)}</div>`;
   }
 }
 function actionLabel(a){
@@ -478,7 +630,10 @@ async function confirmAiActions(btn){
 }
 
 
-sb.auth.onAuthStateChange(()=>loadState());
+sb.auth.onAuthStateChange((event)=>{
+ if(event==='PASSWORD_RECOVERY'){showPasswordRecovery();return;}
+ if(!recoveryMode)loadState();
+});
 loadState();
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
