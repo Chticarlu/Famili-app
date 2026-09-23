@@ -190,6 +190,21 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="card"><h3>Membres</h3><div id="membersList"></div><div id="membershipActions"></div></div>
    <div class="card"><h3>Invitation</h3><div class="code" id="familyCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
    <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 100</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button><button id="syncBillingBtn2" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button></div>
+   <div class="card">
+    <h3>Compte</h3>
+    <p id="accountOwnerHint" class="muted">Gérez votre compte Famili.</p>
+    <div id="ownerTransferBox" class="hidden">
+      <label>Transférer la propriété du foyer</label>
+      <select id="newOwnerSelect"></select>
+      <button class="btn full secondary" onclick="transferOwnership()">Transférer la propriété</button>
+      <p class="muted">Le nouveau propriétaire pourra ensuite gérer l’abonnement du foyer.</p>
+    </div>
+    <button class="btn full secondary" onclick="exportMyData()">Exporter mes données</button>
+    <a class="btn full secondary" style="display:block;text-align:center;text-decoration:none" href="mailto:famili@fretixo.fr?subject=Support%20Famili">Contacter le support</a>
+    <button id="deleteAccountBtn" class="btn full danger" onclick="deleteAccount()">Supprimer mon compte</button>
+    <div id="accountMsg"></div>
+    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.4</p>
+   </div>
   </div>
  </section>
 </div>
@@ -209,7 +224,8 @@ const sb = supabase.createClient("https://mugtbxugqevnxoynkrfz.supabase.co", "sb
 let user=null, household=null, householdRole=null, subscription=null, channel=null, recoveryMode=false;
 let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[],aiUsage=null;
 
-function notice(el,text,type=''){el.innerHTML=`<div class="notice ${type}">${text}</div>`}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function notice(el,text,type=''){el.innerHTML=`<div class="notice ${type}">${esc(text)}</div>`}
 function tab(x){loginTab.classList.toggle('active',x==='login');signupTab.classList.toggle('active',x==='signup');loginBox.classList.toggle('hidden',x!=='login');signupBox.classList.toggle('hidden',x!=='signup');authMsg.innerHTML=''}
 async function signup(){const name=signupName.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value;if(!name||!email||password.length<8)return notice(authMsg,'Prénom, email et mot de passe de 8 caractères minimum.','err');const{data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name}}});if(error)return notice(authMsg,error.message,'err');notice(authMsg,data.session?'Compte créé.':'Compte créé. Vérifiez votre email si une confirmation est demandée.','ok')}
 async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,'Email ou mot de passe incorrect.','err')}
@@ -238,6 +254,73 @@ async function logout(){recoveryMode=false;await sb.auth.signOut()}
 async function createHH(){const name=hhName.value.trim();if(!name)return notice(hhMsg,'Ajoutez un nom de foyer.','err');const{error}=await sb.rpc('create_household',{p_name:name});if(error)return notice(hhMsg,error.message,'err');await loadState()}
 async function joinHH(){const code=joinCode.value.trim().toUpperCase();const{error}=await sb.rpc('join_household_by_code',{p_code:code});if(error)return notice(hhMsg,'Code invalide ou foyer inaccessible.','err');await loadState()}
 async function leaveHousehold(){if(householdRole==='owner')return;if(!confirm('Quitter ce foyer ? Vous perdrez l’accès à ses données partagées.'))return;const{error}=await sb.rpc('leave_household',{p_household_id:household.id});if(error){alert('Impossible de quitter le foyer pour le moment.');return;}if(channel){sb.removeChannel(channel);channel=null;}household=null;householdRole=null;subscription=null;await loadState();}
+
+async function transferOwnership(){
+ const newOwnerId=newOwnerSelect.value;
+ if(!newOwnerId)return;
+ if(!confirm('Transférer la propriété de ce foyer à ce membre ?'))return;
+ const{error}=await sb.rpc('transfer_household_ownership',{p_household_id:household.id,p_new_owner:newOwnerId});
+ if(error){notice(accountMsg,'Impossible de transférer la propriété pour le moment.','err');return;}
+ notice(accountMsg,'Propriété du foyer transférée avec succès.','ok');
+ await loadState();
+}
+
+function exportMyData(){
+ const payload={
+   exported_at:new Date().toISOString(),
+   account:{email:user?.email||null,display_name:user?.user_metadata?.display_name||null},
+   household:household?{id:household.id,name:household.name,role:householdRole}:null,
+   events, tasks, meals, groceries, budget,
+   members:members.map(m=>({user_id:m.user_id,role:m.role,display_name:m.profiles?.display_name||null,email:m.profiles?.email||null}))
+ };
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;
+ a.download=`famili-export-${new Date().toISOString().slice(0,10)}.json`;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ notice(accountMsg,'Export préparé. Le fichier contient les données actuellement visibles dans votre foyer.','ok');
+}
+
+async function deleteAccount(){
+ const typed=prompt('Cette action est définitive. Tapez SUPPRIMER pour confirmer la suppression de votre compte.');
+ if(typed!=='SUPPRIMER')return;
+ deleteAccountBtn.disabled=true;
+ deleteAccountBtn.textContent='Suppression en cours…';
+ accountMsg.innerHTML='';
+ try{
+   const{data,error}=await sb.functions.invoke('delete-account');
+   if(error){
+     let detail=null;
+     try{detail=await error.context?.json?.();}catch(_){}
+     const code=detail?.code||data?.code||null;
+     if(code==='OWNER_TRANSFER_REQUIRED'){
+       notice(accountMsg,'Vous devez d’abord transférer la propriété du foyer à un autre membre.','err');
+       return;
+     }
+     if(code==='STRIPE_CANCEL_FAILED'){
+       notice(accountMsg,'L’abonnement n’a pas pu être annulé. Le compte n’a pas été supprimé. Réessayez plus tard.','err');
+       return;
+     }
+     throw new Error(detail?.error||error.message||'Suppression impossible');
+   }
+   if(data?.deleted){
+     try{localStorage.removeItem(onboardingKey());}catch(_){}
+     await sb.auth.signOut();
+     alert('Votre compte Famili a été supprimé.');
+     location.reload();
+     return;
+   }
+   throw new Error('Suppression impossible');
+ }catch(e){
+   console.error(e);
+   notice(accountMsg,'Impossible de supprimer le compte pour le moment.','err');
+ }finally{
+   deleteAccountBtn.disabled=false;
+   deleteAccountBtn.textContent='Supprimer mon compte';
+ }
+}
 function go(id,btn){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');const navButtons=[...document.querySelectorAll('.nav button')];navButtons.forEach(x=>x.classList.remove('active'));const targetBtn=btn||navButtons.find(x=>(x.getAttribute('onclick')||'').includes(`go('${id}'`));if(targetBtn)targetBtn.classList.add('active');window.scrollTo(0,0)}
 async function copyCode(){await navigator.clipboard.writeText(household.invite_code);alert('Code copié : '+household.invite_code)}
 function onboardingKey(){return household?`famili-onboarding-hidden-${household.id}`:'famili-onboarding-hidden'}
@@ -251,7 +334,7 @@ function renderOnboarding(){
  onboardingCard.classList.remove('hidden');
  onboardingProgress.style.width=`${Math.round(doneCount/3*100)}%`;
  onboardingSteps.innerHTML=`
-  <div class="onboarding-step done"><div class="onboarding-dot">✓</div><div><div class="title">Foyer créé</div><div class="muted">${household.name} est prêt à être utilisé.</div></div></div>
+  <div class="onboarding-step done"><div class="onboarding-dot">✓</div><div><div class="title">Foyer créé</div><div class="muted">${esc(household.name)} est prêt à être utilisé.</div></div></div>
   <div class="onboarding-step ${hasMember?'done':''}"><div class="onboarding-dot">${hasMember?'✓':'2'}</div><div style="flex:1"><div class="title">Inviter un membre</div><div class="muted">${hasMember?'Votre foyer est déjà partagé.':'Partagez le code du foyer avec votre conjoint ou un proche.'}</div>${hasMember?'':`<div class="onboarding-actions"><button class="smallbtn" onclick="copyCode()">Copier le code</button><button class="smallbtn" onclick="go('family')">Voir la famille</button></div>`}</div></div>
   <div class="onboarding-step ${hasFirstContent?'done':''}"><div class="onboarding-dot">${hasFirstContent?'✓':'3'}</div><div style="flex:1"><div class="title">Ajouter votre premier élément</div><div class="muted">${hasFirstContent?'Votre organisation a commencé.':'Ajoutez un rendez-vous ou demandez à Famili de préparer vos premiers repas.'}</div>${hasFirstContent?'':`<div class="onboarding-actions"><button class="smallbtn" onclick="go('planning');setTimeout(()=>eventTitle.focus(),50)">Ajouter un événement</button><button class="smallbtn" onclick="go('meals')">Créer des menus IA</button></div>`}</div></div>`;
 }
@@ -428,7 +511,7 @@ function emptyState(emoji,title,text,actionLabel='',action=''){
  return `<div class="empty"><div class="emoji">${emoji}</div><div class="title">${title}</div><div class="muted">${text}</div>${actionLabel?`<button class="smallbtn" style="margin-top:10px" onclick="${action}">${actionLabel}</button>`:''}</div>`;
 }
 function eventItem(e){
- return `<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''} ${e.person?'• '+e.person:''}</div></div><button class="smallbtn danger" onclick="delEvent('${e.id}')">Suppr.</button></div>`;
+ return `<div class="item"><div><div class="title">${esc(e.title)}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${esc(e.event_time||'')} ${e.person?'• '+esc(e.person):''}</div></div><button class="smallbtn danger" onclick="delEvent('${e.id}')">Suppr.</button></div>`;
 }
 function render(){
  renderOnboarding();
@@ -446,34 +529,34 @@ function render(){
  const nextEvent=future[0];
  const brief=[];
  if(todayEvents.length){
-   brief.push(`<div class="item"><div><div class="title">📅 ${todayEvents.length} événement${todayEvents.length>1?'s':''} aujourd’hui</div><div class="muted">${todayEvents.slice(0,2).map(e=>`${e.title}${e.event_time?' à '+e.event_time:''}`).join(' • ')}</div></div></div>`);
+   brief.push(`<div class="item"><div><div class="title">📅 ${todayEvents.length} événement${todayEvents.length>1?'s':''} aujourd’hui</div><div class="muted">${todayEvents.slice(0,2).map(e=>`${esc(e.title)}${e.event_time?' à '+esc(e.event_time):''}`).join(' • ')}</div></div></div>`);
  }else if(nextEvent){
-   brief.push(`<div class="item"><div><div class="title">📅 Prochain rendez-vous</div><div class="muted">${nextEvent.title} • ${new Date(nextEvent.event_date+'T00:00').toLocaleDateString('fr-FR')}${nextEvent.event_time?' à '+nextEvent.event_time:''}</div></div></div>`);
+   brief.push(`<div class="item"><div><div class="title">📅 Prochain rendez-vous</div><div class="muted">${esc(nextEvent.title)} • ${new Date(nextEvent.event_date+'T00:00').toLocaleDateString('fr-FR')}${nextEvent.event_time?' à '+esc(nextEvent.event_time):''}</div></div></div>`);
  }else{
    brief.push('<div class="item"><div><div class="title">📅 Planning calme</div><div class="muted">Aucun événement à venir.</div></div></div>');
  }
 
  if(openTasks.length){
-   brief.push(`<div class="item"><div><div class="title">✅ ${openTasks.length} tâche${openTasks.length>1?'s':''} à faire</div><div class="muted">${openTasks.slice(0,2).map(t=>t.title).join(' • ')}</div></div></div>`);
+   brief.push(`<div class="item"><div><div class="title">✅ ${openTasks.length} tâche${openTasks.length>1?'s':''} à faire</div><div class="muted">${openTasks.slice(0,2).map(t=>esc(t.title)).join(' • ')}</div></div></div>`);
  }else{
    brief.push('<div class="item"><div><div class="title">✅ Tâches terminées</div><div class="muted">Aucune tâche en attente.</div></div></div>');
  }
 
  if(todayMeal && (todayMeal.lunch||todayMeal.dinner)){
-   brief.push(`<div class="item"><div><div class="title">🍽️ Repas du jour</div><div class="muted">Midi : ${todayMeal.lunch||'—'} • Soir : ${todayMeal.dinner||'—'}</div></div></div>`);
+   brief.push(`<div class="item"><div><div class="title">🍽️ Repas du jour</div><div class="muted">Midi : ${esc(todayMeal.lunch||'—')} • Soir : ${esc(todayMeal.dinner||'—')}</div></div></div>`);
  }else{
    brief.push('<div class="item"><div><div class="title">🍽️ Repas non planifié</div><div class="muted">Vous pouvez demander une idée à l’Assistant repas.</div></div><button class="smallbtn" onclick="go(\'meals\')">Planifier</button></div>');
  }
 
  if(openGroceries.length){
-   brief.push(`<div class="item"><div><div class="title">🛒 ${openGroceries.length} article${openGroceries.length>1?'s':''} à acheter</div><div class="muted">${openGroceries.slice(0,3).map(g=>g.name).join(' • ')}</div></div></div>`);
+   brief.push(`<div class="item"><div><div class="title">🛒 ${openGroceries.length} article${openGroceries.length>1?'s':''} à acheter</div><div class="muted">${openGroceries.slice(0,3).map(g=>esc(g.name)).join(' • ')}</div></div></div>`);
  }else{
    brief.push('<div class="item"><div><div class="title">🛒 Courses à jour</div><div class="muted">Aucun article en attente.</div></div></div>');
  }
  todayBrief.innerHTML=brief.join('');
  briefBadge.textContent=totalToFollow?'À suivre':'À jour';
 
- homeEvents.innerHTML=future.slice(0,5).map(e=>`<div class="item"><div><div class="title">${e.title}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${e.event_time||''}</div></div></div>`).join('')||emptyState('📅','Rien de prévu','Votre prochain événement apparaîtra ici.','Ajouter un événement',"go('planning')");
+ homeEvents.innerHTML=future.slice(0,5).map(e=>`<div class="item"><div><div class="title">${esc(e.title)}</div><div class="muted">${new Date(e.event_date+'T00:00').toLocaleDateString('fr-FR')} ${esc(e.event_time||'')}</div></div></div>`).join('')||emptyState('📅','Rien de prévu','Votre prochain événement apparaîtra ici.','Ajouter un événement',"go('planning')");
  const weekEnd=new Date(today0);weekEnd.setDate(weekEnd.getDate()+7);
  const todayEventsList=future.filter(e=>e.event_date===todayKey);
  const weekEvents=future.filter(e=>{const d=new Date(e.event_date+'T00:00');return e.event_date!==todayKey && d<weekEnd;});
@@ -484,27 +567,38 @@ function render(){
  if(laterEvents.length) eventGroups.push(`<div class="group-title">Plus tard</div>${laterEvents.map(eventItem).join('')}`);
  eventsList.innerHTML=eventGroups.join('')||emptyState('🗓️','Planning vide','Ajoutez votre premier rendez-vous ou événement.','Créer un événement',"eventTitle.focus()");
  const sortedTasks=[...tasks].sort((a,b)=>Number(a.is_done)-Number(b.is_done));
- tasksList.innerHTML=sortedTasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${t.title}</div><div class="muted">${t.assigned_to||'Non attribuée'}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||emptyState('✅','Aucune tâche','Tout est calme pour le moment.','Ajouter une tâche',"taskTitle.focus()");
- mealsList.innerHTML=meals.map(m=>`<div class="item"><div><div class="title">${new Date(m.meal_date+'T00:00').toLocaleDateString('fr-FR')}</div><div class="muted">Midi : ${m.lunch||'—'} • Soir : ${m.dinner||'—'}</div></div><button class="smallbtn danger" onclick="delMeal('${m.id}')">Suppr.</button></div>`).join('')||emptyState('🍽️','Aucun repas planifié','L’Assistant repas peut préparer plusieurs jours en quelques secondes.','Créer des menus avec l’IA',"aiPeople.focus()");
+ tasksList.innerHTML=sortedTasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${esc(t.title)}</div><div class="muted">${esc(t.assigned_to||'Non attribuée')}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||emptyState('✅','Aucune tâche','Tout est calme pour le moment.','Ajouter une tâche',"taskTitle.focus()");
+ mealsList.innerHTML=meals.map(m=>`<div class="item"><div><div class="title">${new Date(m.meal_date+'T00:00').toLocaleDateString('fr-FR')}</div><div class="muted">Midi : ${esc(m.lunch||'—')} • Soir : ${esc(m.dinner||'—')}</div></div><button class="smallbtn danger" onclick="delMeal('${m.id}')">Suppr.</button></div>`).join('')||emptyState('🍽️','Aucun repas planifié','L’Assistant repas peut préparer plusieurs jours en quelques secondes.','Créer des menus avec l’IA',"aiPeople.focus()");
  const groceryOrder=['Fruits & légumes','Frais','Épicerie','Boissons','Hygiène','Bébé','Maison','Autre'];
  const sortedGroceries=[...groceries].sort((a,b)=>Number(a.is_done)-Number(b.is_done) || groceryOrder.indexOf(a.category)-groceryOrder.indexOf(b.category) || a.name.localeCompare(b.name,'fr'));
  let lastCategory=null; const groceryHtml=[];
  for(const g of sortedGroceries){
-   if(!g.is_done && g.category!==lastCategory){groceryHtml.push(`<div class="group-title">${g.category}</div>`);lastCategory=g.category;}
+   if(!g.is_done && g.category!==lastCategory){groceryHtml.push(`<div class="group-title">${esc(g.category)}</div>`);lastCategory=g.category;}
    if(g.is_done && lastCategory!=='__done__'){groceryHtml.push('<div class="group-title">Déjà acheté</div>');lastCategory='__done__';}
-   groceryHtml.push(`<div class="item"><div class="check"><input type="checkbox" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${g.name}</div><span class="pill">${g.category}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`);
+   groceryHtml.push(`<div class="item"><div class="check"><input type="checkbox" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${esc(g.name)}</div><span class="pill">${esc(g.category)}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`);
  }
  groceriesList.innerHTML=groceryHtml.join('')||emptyState('🛒','Liste de courses vide','Ajoutez un article ou demandez-le directement à Assistant Famili.','Ajouter un article',"groceryName.focus()");
  const inc=month.filter(x=>x.entry_type==='income').reduce((s,x)=>s+Number(x.amount),0);
  budgetTotals.innerHTML=`<div class="row"><div><div class="muted">Revenus du mois</div><h2 style="color:var(--green)">${euro(inc)}</h2></div><div><div class="muted">Dépenses du mois</div><h2 style="color:var(--red)">${euro(exp)}</h2></div></div>`;
- budgetList.innerHTML=budget.map(b=>`<div class="item"><div><div class="title">${b.label}</div><div class="muted">${new Date(b.entry_date+'T00:00').toLocaleDateString('fr-FR')}</div></div><div><b style="color:${b.entry_type==='income'?'var(--green)':'var(--red)'}">${b.entry_type==='income'?'+':'-'}${euro(b.amount)}</b><br><button class="smallbtn danger" onclick="delBudget('${b.id}')">Suppr.</button></div></div>`).join('')||emptyState('💶','Aucun mouvement','Ajoutez une dépense ou un revenu pour commencer le suivi.','Ajouter un mouvement',"budgetLabel.focus()");
- membersList.innerHTML=members.map(m=>`<div class="item"><div><div class="title">${m.profiles?.display_name||m.profiles?.email||'Membre'}</div><div class="muted">${m.role==='owner'?'Propriétaire du foyer':'Membre'}</div></div></div>`).join('');
+ budgetList.innerHTML=budget.map(b=>`<div class="item"><div><div class="title">${esc(b.label)}</div><div class="muted">${new Date(b.entry_date+'T00:00').toLocaleDateString('fr-FR')}</div></div><div><b style="color:${b.entry_type==='income'?'var(--green)':'var(--red)'}">${b.entry_type==='income'?'+':'-'}${euro(b.amount)}</b><br><button class="smallbtn danger" onclick="delBudget('${b.id}')">Suppr.</button></div></div>`).join('')||emptyState('💶','Aucun mouvement','Ajoutez une dépense ou un revenu pour commencer le suivi.','Ajouter un mouvement',"budgetLabel.focus()");
+ membersList.innerHTML=members.map(m=>`<div class="item"><div><div class="title">${esc(m.profiles?.display_name||m.profiles?.email||'Membre')}</div><div class="muted">${m.role==='owner'?'Propriétaire du foyer':'Membre'}</div></div></div>`).join('');
  const used=Math.max(0,Number(aiUsage?.request_count||0)), limit=100, pct=Math.min(100,Math.round((used/limit)*100));
  aiUsageText.textContent=`${used} / ${limit}`;aiUsageBar.style.width=`${pct}%`;
  aiUsageHint.textContent=used>=limit?'Quota mensuel atteint. Il se réinitialisera le mois prochain.':used>=80?`Il reste ${limit-used} requête${limit-used>1?'s':''} IA ce mois-ci.`:'Le quota est partagé par tout le foyer.';
  membershipActions.innerHTML=householdRole==='owner'
    ? '<div class="notice">Vous êtes le propriétaire de ce foyer.</div>'
    : '<button class="btn full danger" onclick="leaveHousehold()">Quitter le foyer</button>';
+
+ const otherMembers=members.filter(m=>m.user_id!==user.id);
+ ownerTransferBox.classList.toggle('hidden',householdRole!=='owner' || otherMembers.length===0);
+ if(householdRole==='owner' && otherMembers.length>0){
+   newOwnerSelect.innerHTML=otherMembers.map(m=>`<option value="${m.user_id}">${esc(m.profiles?.display_name||m.profiles?.email||'Membre')}</option>`).join('');
+   accountOwnerHint.textContent='Vous êtes propriétaire. Avant de supprimer votre compte, transférez le foyer à un autre membre.';
+ }else if(householdRole==='owner'){
+   accountOwnerHint.textContent='Vous êtes le seul membre du foyer. Supprimer votre compte supprimera aussi les données du foyer et annulera son abonnement actif.';
+ }else{
+   accountOwnerHint.textContent='Supprimer votre compte vous retirera du foyer. Les données partagées du foyer resteront accessibles aux autres membres.';
+ }
 } 
 
 
@@ -601,7 +695,7 @@ function actionLabel(a){
 }
 function renderAiActions(){
   aiActions.innerHTML=pendingAiActions.length
-    ? pendingAiActions.map((a,i)=>`<div class="ai-action"><div class="title">${actionLabel(a)}</div><button class="smallbtn danger" style="margin-top:8px" onclick="removeAiAction(${i})">Retirer</button></div>`).join('')
+    ? pendingAiActions.map((a,i)=>`<div class="ai-action"><div class="title">${esc(actionLabel(a))}</div><button class="smallbtn danger" style="margin-top:8px" onclick="removeAiAction(${i})">Retirer</button></div>`).join('')
     : '<div class="muted">Aucune action à appliquer.</div>';
 }
 function removeAiAction(i){ pendingAiActions.splice(i,1); renderAiActions(); }

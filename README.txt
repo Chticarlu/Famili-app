@@ -18,3 +18,16 @@ Principales évolutions :
 - manifest PWA ajouté et cache service worker V5.2
 
 Important : après déploiement, vérifier dans Supabase Authentication > URL Configuration que l'URL de production Vercel est autorisée pour la récupération du mot de passe.
+
+
+V5.3 — gestion du compte : transfert de propriété du foyer et suppression sécurisée du compte.
+
+
+V5.4 finale avant bêta :
+- gestion et suppression sécurisée du compte ;
+- transfert de propriété du foyer ;
+- export JSON des données ;
+- support par e-mail ;
+- échappement des données affichées pour réduire les risques XSS ;
+- en-têtes de sécurité Vercel ;
+- cache PWA mis à jour.
