@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Famili V5.2 Final -->
+<!-- Famili V5.7 Beta Hardened -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -31,6 +31,11 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 .topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pricehero{font-size:34px;font-weight:900}.ai-action{padding:12px;border:1px solid var(--line);border-radius:14px;margin:8px 0;background:#fafafe}.onboarding-step{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}.onboarding-step:last-child{border-bottom:0}.onboarding-dot{width:28px;height:28px;flex:0 0 28px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:#5447d9;font-weight:900}.onboarding-step.done .onboarding-dot{background:#eaf8f1;color:#19704b}.onboarding-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.onboarding-progress{height:7px;background:#eceef4;border-radius:999px;overflow:hidden;margin:10px 0 4px}.onboarding-progress>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .25s ease}.usagebar{height:9px;background:#eceef4;border-radius:999px;overflow:hidden;margin:8px 0}.usagebar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .25s ease}.statusbox{padding:12px;border-radius:14px;background:#fafafe;border:1px solid var(--line);margin-top:10px}.empty{padding:18px 10px;text-align:center}.empty .emoji{font-size:28px;margin-bottom:6px}.empty .title{margin-bottom:4px}.group-title{font-size:12px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 2px}.group-title:first-child{margin-top:0}.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:6px}@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:640px){.quickgrid{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}}
+.legal-modal{position:fixed;inset:0;background:rgba(20,20,30,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:18px}
+.legal-modal-panel{background:var(--bg);width:min(820px,100%);max-height:88vh;overflow:auto;border-radius:24px 24px 12px 12px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.inline-check{display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:13px;color:var(--muted)}
+.inline-check input{width:auto;margin-top:3px}
+.inline-link{border:0;background:none;padding:0;color:#5447d9;text-decoration:underline;font:inherit}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -43,7 +48,9 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   <div class="card">
    <div class="tabs"><button id="loginTab" class="active" onclick="tab('login')">Connexion</button><button id="signupTab" onclick="tab('signup')">Créer un compte</button></div>
    <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button><button class="btn full secondary" onclick="requestPasswordReset()">Mot de passe oublié ?</button></div>
-   <div id="signupBox" class="hidden"><label>Prénom</label><input id="signupName"><label>Email</label><input id="signupEmail" type="email"><label>Mot de passe</label><input id="signupPassword" type="password"><button class="btn full" onclick="signup()">Créer mon compte</button></div>
+   <div id="signupBox" class="hidden"><label>Prénom</label><input id="signupName" maxlength="120"><label>Email</label><input id="signupEmail" type="email"><label>Mot de passe</label><input id="signupPassword" type="password">
+   <label class="inline-check"><input id="signupLegal" type="checkbox"><span>J’accepte les <button type="button" class="inline-link" onclick="showLegalModal()">CGU</button> et reconnais avoir pris connaissance de la <button type="button" class="inline-link" onclick="showLegalModal()">politique de confidentialité</button>.</span></label>
+   <button class="btn full" onclick="signup()">Créer mon compte</button></div>
    <div id="authMsg"></div>
    <div id="passwordRecoveryBox" class="hidden" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
     <h3 style="margin-top:0">Créer un nouveau mot de passe</h3>
@@ -54,12 +61,13 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
     <div id="recoveryMsg"></div>
    </div>
   </div>
+  <div class="muted" style="text-align:center;margin-top:10px">En utilisant Famili, vous pouvez consulter à tout moment nos <button type="button" class="inline-link" onclick="showLegalModal()">informations légales et conditions</button>.</div>
  </section>
 
  <section id="householdView" class="hidden">
   <div class="card topline"><div><div class="muted">Connecté</div><b id="userLabel"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
   <div class="hero"><h2>Créer votre foyer</h2><p>Ou rejoignez celui de votre famille avec un code.</p></div>
-  <div class="card"><h3>Créer un foyer</h3><label>Nom du foyer</label><input id="hhName" placeholder="Famille Martin"><button class="btn full" onclick="createHH()">Créer</button></div>
+  <div class="card"><h3>Créer un foyer</h3><label>Nom du foyer</label><input id="hhName" maxlength="80" placeholder="Famille Martin"><button class="btn full" onclick="createHH()">Créer</button></div>
   <div class="card"><h3>Rejoindre un foyer</h3><label>Code</label><input id="joinCode" maxlength="8" style="text-transform:uppercase"><button class="btn full secondary" onclick="joinHH()">Rejoindre</button></div>
   <div id="hhMsg"></div>
  </section>
@@ -84,6 +92,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="item"><span>💶 Budget du foyer</span><b>Inclus</b></div>
    <div class="item"><span>✨ Assistant Famili</span><b>Inclus</b></div>
    <p class="muted">Un seul abonnement couvre le foyer. Le paiement est géré de manière sécurisée par Stripe.</p>
+   <label id="billingLegalWrap" class="inline-check"><input id="billingLegal" type="checkbox"><span>J’accepte les <button type="button" class="inline-link" onclick="showLegalModal()">CGV Famili Premium</button> et les conditions de résiliation. L’essai dure 14 jours puis l’abonnement est facturé 5,99 € / mois jusqu’à résiliation.</span></label>
    <button id="startTrialBtn" class="btn full" onclick="startCheckout()">Commencer mes 14 jours gratuits</button><button id="syncBillingBtn" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button>
    <div id="billingMsg"></div>
   </div>
@@ -118,7 +127,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
       <button onclick="prefillAssistant('Ajoute un rendez-vous ') ">📅 Ajouter un rendez-vous</button>
     </div>
     <label>Votre demande</label>
-    <textarea id="assistantPrompt" placeholder="Ex. Ajoute du lait aux courses et mets dentiste jeudi à 17h."></textarea>
+    <textarea id="assistantPrompt" maxlength="2000" placeholder="Ex. Ajoute du lait aux courses et mets dentiste jeudi à 17h."></textarea>
     <button class="btn full" onclick="askFamili()">Demander à Famili</button>
     <div id="assistantStatus"></div>
    </div>
@@ -143,12 +152,12 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   </div>
 
   <div id="planning" class="section">
-   <div class="card"><h2>Planning</h2><label>Événement</label><input id="eventTitle"><div class="row"><div><label>Date</label><input id="eventDate" type="date"></div><div><label>Heure</label><input id="eventTime" type="time"></div></div><label>Pour qui ?</label><input id="eventPerson"><button class="btn full" onclick="addEvent()">Ajouter</button></div>
+   <div class="card"><h2>Planning</h2><label>Événement</label><input id="eventTitle" maxlength="200"><div class="row"><div><label>Date</label><input id="eventDate" type="date"></div><div><label>Heure</label><input id="eventTime" type="time"></div></div><label>Pour qui ?</label><input id="eventPerson" maxlength="120"><button class="btn full" onclick="addEvent()">Ajouter</button></div>
    <div class="card"><div id="eventsList"></div></div>
   </div>
 
   <div id="tasks" class="section">
-   <div class="card"><h2>Tâches</h2><label>Tâche</label><input id="taskTitle"><div class="row"><div><label>Pour qui ?</label><input id="taskPerson"></div><div><label>Récurrence</label><select id="taskRepeat"><option value="none">Aucune</option><option value="daily">Tous les jours</option><option value="weekly">Chaque semaine</option></select></div></div><button class="btn full" onclick="addTask()">Ajouter</button></div>
+   <div class="card"><h2>Tâches</h2><label>Tâche</label><input id="taskTitle" maxlength="200"><div class="row"><div><label>Pour qui ?</label><input id="taskPerson" maxlength="120"></div><div><label>Récurrence</label><select id="taskRepeat"><option value="none">Aucune</option><option value="daily">Tous les jours</option><option value="weekly">Chaque semaine</option></select></div></div><button class="btn full" onclick="addTask()">Ajouter</button></div>
    <div class="card"><div id="tasksList"></div></div>
   </div>
 
@@ -157,30 +166,30 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
     <div class="topline"><div><div class="muted">Famili IA</div><h3 style="margin:3px 0 0">🍽️ Assistant repas</h3></div><span class="pill">Beta</span></div>
     <p class="muted">Créez plusieurs jours de menus et la liste de courses associée.</p>
     <label>Pour combien de personnes ?</label>
-    <input id="aiPeople" placeholder="Ex. 2 adultes + 1 enfant">
+    <input id="aiPeople" maxlength="120" placeholder="Ex. 2 adultes + 1 enfant">
     <div class="row">
       <div><label>Nombre de jours</label><select id="aiDays"><option>3</option><option selected>5</option><option>7</option></select></div>
-      <div><label>Budget indicatif</label><input id="aiBudget" placeholder="Ex. 70 €"></div>
+      <div><label>Budget indicatif</label><input id="aiBudget" maxlength="120" placeholder="Ex. 70 €"></div>
     </div>
     <label>Préférences</label>
-    <input id="aiPreferences" placeholder="Simple, rapide, familial…">
+    <input id="aiPreferences" maxlength="1000" placeholder="Simple, rapide, familial…">
     <label>Exclusions / allergies</label>
-    <input id="aiExclusions" placeholder="Ex. sans poisson, allergie arachide…">
+    <input id="aiExclusions" maxlength="1000" placeholder="Ex. sans poisson, allergie arachide…">
     <button class="btn full" onclick="generateMealPlan()">Générer mes menus</button>
     <div id="mealAiStatus"></div>
     <p class="muted" style="margin-bottom:0">Les menus et la liste de courses ne sont ajoutés qu’après votre confirmation.</p>
    </div>
-   <div class="card"><h3>Ajouter un repas manuellement</h3><label>Date</label><input id="mealDate" type="date"><label>Midi</label><input id="mealLunch"><label>Soir</label><input id="mealDinner"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
+   <div class="card"><h3>Ajouter un repas manuellement</h3><label>Date</label><input id="mealDate" type="date"><label>Midi</label><input id="mealLunch" maxlength="1000"><label>Soir</label><input id="mealDinner" maxlength="1000"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
    <div class="card"><h3>Repas planifiés</h3><div id="mealsList"></div></div>
   </div>
 
   <div id="groceries" class="section">
-   <div class="card"><h2>Courses</h2><label>Article</label><input id="groceryName"><label>Catégorie</label><select id="groceryCategory"><option>Fruits & légumes</option><option>Frais</option><option>Épicerie</option><option>Boissons</option><option>Hygiène</option><option>Bébé</option><option>Maison</option><option>Autre</option></select><button class="btn full" onclick="addGrocery()">Ajouter</button></div>
+   <div class="card"><h2>Courses</h2><label>Article</label><input id="groceryName" maxlength="300"><label>Catégorie</label><select id="groceryCategory"><option>Fruits & légumes</option><option>Frais</option><option>Épicerie</option><option>Boissons</option><option>Hygiène</option><option>Bébé</option><option>Maison</option><option>Autre</option></select><button class="btn full" onclick="addGrocery()">Ajouter</button></div>
    <div class="card"><div id="groceriesList"></div></div>
   </div>
 
   <div id="budget" class="section">
-   <div class="card"><h2>Budget</h2><label>Description</label><input id="budgetLabel"><div class="row"><div><label>Montant</label><input id="budgetAmount" type="number" step="0.01"></div><div><label>Type</label><select id="budgetType"><option value="expense">Dépense</option><option value="income">Revenu</option></select></div></div><button class="btn full" onclick="addBudget()">Ajouter</button></div>
+   <div class="card"><h2>Budget</h2><label>Description</label><input id="budgetLabel" maxlength="200"><div class="row"><div><label>Montant</label><input id="budgetAmount" type="number" step="0.01"></div><div><label>Type</label><select id="budgetType"><option value="expense">Dépense</option><option value="income">Revenu</option></select></div></div><button class="btn full" onclick="addBudget()">Ajouter</button></div>
    <div class="card"><div id="budgetTotals"></div><div id="budgetList"></div></div>
   </div>
 
@@ -191,6 +200,11 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="card"><h3>Invitation</h3><div class="code" id="familyCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
    <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 100</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button><button id="syncBillingBtn2" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button></div>
    <div class="card">
+    <h3>Informations légales</h3>
+    <p class="muted">Consultez les mentions légales, la confidentialité, les CGU et les conditions de l’abonnement.</p>
+    <button class="btn full secondary" onclick="go('legal')">Voir les informations légales</button>
+   </div>
+   <div class="card">
     <h3>Compte</h3>
     <p id="accountOwnerHint" class="muted">Gérez votre compte Famili.</p>
     <div id="ownerTransferBox" class="hidden">
@@ -200,13 +214,150 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
       <p class="muted">Le nouveau propriétaire pourra ensuite gérer l’abonnement du foyer.</p>
     </div>
     <button class="btn full secondary" onclick="exportMyData()">Exporter mes données</button>
-    <a class="btn full secondary" style="display:block;text-align:center;text-decoration:none" href="mailto:famili@fretixo.fr?subject=Support%20Famili">Contacter le support</a>
+    <a class="btn full secondary" style="display:block;text-align:center;text-decoration:none" href="mailto:contact@fretixo.fr?subject=Support%20Famili">Contacter le support</a>
     <button id="deleteAccountBtn" class="btn full danger" onclick="deleteAccount()">Supprimer mon compte</button>
     <div id="accountMsg"></div>
-    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.4</p>
+    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.7 bêta</p>
+   </div>
+
+  </div>
+
+  <div id="legal" class="section">
+   <div class="card topline">
+    <div><div class="muted">Famili App</div><b>Informations légales</b></div>
+    <button class="smallbtn" onclick="go('family')">Retour</button>
+   </div>
+
+   <div class="card">
+    <h2>Mentions légales</h2>
+    <p class="muted">Dernière mise à jour : 24 septembre 2026</p>
+    <p><b>Éditeur :</b> Famili App — activité de micro-entreprise en cours d’immatriculation.</p>
+    <p><b>Exploitant :</b> CARLU Gauthier<br>
+    14 rue des Croisettes<br>
+    62650 Campagne-lès-Boulonnais — France<br>
+    E-mail : <a href="mailto:contact@fretixo.fr">contact@fretixo.fr</a><br>
+    Téléphone : <a href="tel:+33761774283">07 61 77 42 83</a><br>
+    SIREN / SIRET : en cours d’attribution<br>
+    RNE : immatriculation en cours.</p>
+    <p>Après immatriculation, les mentions d’identification de l’entreprise seront mises à jour.</p>
+    <p><b>Hébergement :</b> Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis.</p>
+    <p>La base de données, l’authentification et certaines fonctions serveur reposent sur Supabase. Les paiements sont traités par Stripe et certaines fonctions d’intelligence artificielle utilisent OpenAI.</p>
+    <p><b>Propriété intellectuelle :</b> les textes, éléments visuels, interfaces, logos, structure et fonctionnalités propres à Famili sont protégés par les règles applicables en matière de propriété intellectuelle. Toute reproduction ou exploitation non autorisée est interdite, sous réserve des droits attachés aux composants tiers et logiciels open source utilisés.</p>
+   </div>
+
+   <div class="card">
+    <h2>Politique de confidentialité</h2>
+    <p class="muted">Dernière mise à jour : 24 septembre 2026</p>
+    <p><b>Responsable du traitement :</b> CARLU Gauthier, Famili App — micro-entreprise en cours d’immatriculation. Contact : <a href="mailto:contact@fretixo.fr">contact@fretixo.fr</a>.</p>
+
+    <h3>Données traitées</h3>
+    <p>Selon votre utilisation de Famili, nous pouvons traiter : nom ou prénom, adresse e-mail, identifiants techniques de compte, appartenance à un foyer, événements, tâches, repas, listes de courses, informations de budget saisies volontairement, demandes faites à l’Assistant Famili, ainsi que des données techniques nécessaires au fonctionnement, à la sécurité et à la facturation.</p>
+
+    <h3>Finalités et bases juridiques</h3>
+    <p>Les données nécessaires au compte, au foyer partagé et aux fonctionnalités Premium sont traitées pour exécuter le service demandé. Les traitements liés à la sécurité, à la prévention des abus et à l’amélioration de la fiabilité reposent sur l’intérêt légitime de Famili App. Les obligations comptables, fiscales ou légales reposent sur les obligations applicables à l’éditeur.</p>
+
+    <h3>Fonctions d’intelligence artificielle</h3>
+    <p>Lorsque vous utilisez l’Assistant Famili ou la génération de menus, les éléments nécessaires à votre demande peuvent être transmis au prestataire d’intelligence artificielle afin de générer une réponse. Évitez d’y saisir des informations sensibles qui ne sont pas nécessaires au fonctionnement du service.</p>
+
+    <h3>Prestataires</h3>
+    <p>Famili utilise notamment Vercel pour l’hébergement de l’application, Supabase pour l’authentification et les données, Stripe pour les paiements, OpenAI pour certaines fonctions IA et Resend pour certains e-mails techniques. Ces prestataires ne reçoivent que les informations nécessaires à leur mission. Certains peuvent traiter des données hors de l’Espace économique européen, avec les garanties contractuelles et mécanismes prévus par la réglementation applicable.</p>
+
+    <h3>Durées de conservation</h3>
+    <p>Les données d’organisation du foyer sont conservées tant que le compte ou le foyer correspondant existe. Lorsqu’un compte ou un foyer est supprimé, les données actives associées sont supprimées ou rendues inaccessibles, sous réserve des sauvegardes techniques temporaires et des obligations légales de conservation. Les pièces et informations nécessaires à la comptabilité ou à la preuve des transactions peuvent être conservées pendant la durée imposée par la loi.</p>
+
+    <h3>Vos droits</h3>
+    <p>Vous pouvez demander l’accès, la rectification, l’effacement ou la limitation de vos données et exercer les autres droits prévus par le RGPD lorsque leurs conditions sont réunies. Famili permet également un export des principales données visibles dans le foyer. Pour exercer vos droits : <a href="mailto:contact@fretixo.fr">contact@fretixo.fr</a>. Vous pouvez aussi saisir la CNIL.</p>
+
+    <h3>Mineurs et données sensibles</h3>
+    <p>Famili est destiné à l’organisation du foyer par ses utilisateurs. Il n’est pas conçu comme un service directement destiné aux jeunes enfants. Les utilisateurs doivent éviter de renseigner des données de santé, opinions, convictions ou autres données particulièrement sensibles sauf nécessité réelle et base légale appropriée.</p>
+
+    <h3>Cookies et stockage local</h3>
+    <p>Famili n’utilise pas actuellement de publicité comportementale. Des mécanismes techniques de session et de stockage local peuvent être utilisés pour la connexion, la sécurité, l’installation PWA et certains réglages nécessaires au service.</p>
+   </div>
+
+   <div class="card">
+    <h2>Conditions générales d’utilisation (CGU)</h2>
+    <p class="muted">Dernière mise à jour : 24 septembre 2026</p>
+    <p>Famili est une application d’organisation familiale permettant notamment de gérer un planning, des tâches, des repas, des courses, un budget partagé et des fonctions d’assistance par intelligence artificielle.</p>
+
+    <h3>Compte et sécurité</h3>
+    <p>L’utilisateur doit fournir des informations exactes, conserver ses identifiants confidentiels et signaler toute utilisation suspecte. Il reste responsable des actions réalisées depuis son compte jusqu’à leur signalement.</p>
+
+    <h3>Foyer partagé</h3>
+    <p>Les membres d’un même foyer peuvent voir et modifier les informations partagées selon les fonctionnalités proposées. Le propriétaire du foyer gère notamment l’abonnement et peut transférer la propriété à un autre membre.</p>
+
+    <h3>Intelligence artificielle</h3>
+    <p>Les réponses et propositions générées automatiquement peuvent contenir des erreurs. Elles ne constituent pas un avis médical, juridique, financier ou professionnel. Lorsque l’application présente une étape de confirmation, aucune action proposée par l’IA n’est enregistrée avant validation de l’utilisateur.</p>
+
+    <h3>Usages interdits</h3>
+    <p>Il est interdit de tenter d’accéder au foyer d’un tiers sans autorisation, de contourner les protections techniques, d’utiliser le service de manière illégale, frauduleuse ou abusive, ou de perturber volontairement l’infrastructure de Famili et de ses prestataires.</p>
+
+    <h3>Disponibilité</h3>
+    <p>Famili App met en œuvre des moyens raisonnables pour fournir le service, sans garantir une disponibilité permanente. Des maintenances, incidents ou interruptions de prestataires peuvent affecter temporairement certaines fonctions.</p>
+
+    <h3>Suppression du compte</h3>
+    <p>La suppression est proposée depuis l’application. Un propriétaire ayant d’autres membres dans son foyer doit d’abord transférer la propriété. Lorsque le propriétaire est seul, la suppression du compte peut également entraîner la suppression du foyer et l’annulation de l’abonnement associé.</p>
+   </div>
+
+   <div class="card">
+    <h2>Conditions générales de vente — Famili Premium</h2>
+    <p class="muted">Dernière mise à jour : 24 septembre 2026</p>
+
+    <h3>Offre</h3>
+    <p>Famili Premium donne accès aux fonctionnalités payantes de l’application, notamment au partage du foyer et aux fonctions d’intelligence artificielle prévues dans l’offre.</p>
+
+    <h3>Prix et essai gratuit</h3>
+    <p>Le prix actuellement prévu est de <b>5,99 € par mois</b>, avec <b>14 jours d’essai gratuit</b>, sauf offre différente clairement affichée avant validation de la commande. Le prix total dû est présenté à l’utilisateur avant la souscription. La mention relative à la TVA sera adaptée au régime fiscal applicable à Famili App après immatriculation.</p>
+
+    <h3>Renouvellement</h3>
+    <p>Sauf résiliation, l’abonnement est renouvelé mensuellement après la période d’essai. Un seul abonnement Premium couvre le foyer auquel il est rattaché.</p>
+
+    <h3>Paiement</h3>
+    <p>Le paiement et la gestion du moyen de paiement sont assurés par Stripe. Famili App ne stocke pas directement les numéros complets de cartes bancaires.</p>
+
+    <h3>Résiliation</h3>
+    <p>L’abonnement est sans engagement. Le propriétaire du foyer peut le résilier depuis la fonction <b>Gérer mon abonnement</b>. Sauf disposition plus favorable, la résiliation prend effet à la date de fin de la période d’accès indiquée dans l’application.</p>
+
+    <h3>Évolution de l’offre</h3>
+    <p>Famili App peut faire évoluer les fonctionnalités ou tarifs. Toute modification applicable à un abonnement en cours sera communiquée dans les conditions requises par la réglementation, afin que l’utilisateur puisse résilier s’il ne souhaite pas poursuivre.</p>
+   </div>
+
+   <div class="card">
+    <h2>Rétractation, résiliation et remboursements</h2>
+    <p class="muted">Dernière mise à jour : 24 septembre 2026</p>
+    <p>Les droits légaux du consommateur restent applicables. Pour les contrats conclus à distance, un droit de rétractation de 14 jours existe en principe, sous réserve des exceptions prévues par le Code de la consommation.</p>
+    <p>L’offre Famili prévoit actuellement un essai gratuit de 14 jours avant le premier prélèvement, ce qui permet à l’utilisateur de résilier pendant cette période sans paiement. Cet essai ne réduit pas les droits dont il bénéficie en application de la loi.</p>
+    <p>Après facturation, les périodes déjà commencées ne donnent pas automatiquement lieu à remboursement en dehors des cas imposés par la loi. Une demande peut toutefois être adressée à <a href="mailto:contact@fretixo.fr">contact@fretixo.fr</a>, notamment en cas de double prélèvement, erreur de facturation ou dysfonctionnement significatif.</p>
+   </div>
+
+   <div class="card">
+    <h2>Contact, réclamations et médiation</h2>
+    <p><b>Famili App</b><br>
+    CARLU Gauthier<br>
+    14 rue des Croisettes<br>
+    62650 Campagne-lès-Boulonnais — France<br>
+    E-mail : <a href="mailto:contact@fretixo.fr">contact@fretixo.fr</a><br>
+    Téléphone : <a href="tel:+33761774283">07 61 77 42 83</a></p>
+
+    <h3>Réclamations</h3>
+    <p>Pour toute réclamation, contactez d’abord Famili App par écrit à l’adresse e-mail ci-dessus en précisant l’adresse e-mail du compte concerné et l’objet de votre demande.</p>
+
+    <h3>Médiation de la consommation</h3>
+    <p><b>Médiateur : à compléter après adhésion.</b></p>
+    <p>Avant l’ouverture commerciale au public, Famili App devra désigner un médiateur de la consommation référencé et publier son nom, son adresse et son site internet sur cette page et dans les CGV.</p>
    </div>
   </div>
  </section>
+</div>
+
+<div id="legalModal" class="legal-modal hidden" onclick="if(event.target===this)hideLegalModal()">
+ <div class="legal-modal-panel">
+  <div class="topline" style="position:sticky;top:0;background:var(--bg);padding:4px 0 10px;z-index:2">
+   <div><div class="muted">Famili App</div><b>Informations légales et conditions</b></div>
+   <button class="smallbtn" onclick="hideLegalModal()">Fermer</button>
+  </div>
+  <div id="legalModalContent"></div>
+ </div>
 </div>
 
 <div id="nav" class="nav hidden"><div class="navin">
@@ -227,7 +378,7 @@ let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[],aiUsage=null;
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function notice(el,text,type=''){el.innerHTML=`<div class="notice ${type}">${esc(text)}</div>`}
 function tab(x){loginTab.classList.toggle('active',x==='login');signupTab.classList.toggle('active',x==='signup');loginBox.classList.toggle('hidden',x!=='login');signupBox.classList.toggle('hidden',x!=='signup');authMsg.innerHTML=''}
-async function signup(){const name=signupName.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value;if(!name||!email||password.length<8)return notice(authMsg,'Prénom, email et mot de passe de 8 caractères minimum.','err');const{data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name}}});if(error)return notice(authMsg,error.message,'err');notice(authMsg,data.session?'Compte créé.':'Compte créé. Vérifiez votre email si une confirmation est demandée.','ok')}
+async function signup(){const name=signupName.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value;if(!name||!email||password.length<8)return notice(authMsg,'Prénom, email et mot de passe de 8 caractères minimum.','err');if(!signupLegal.checked)return notice(authMsg,'Vous devez accepter les CGU et prendre connaissance de la politique de confidentialité.','err');const acceptedAt=new Date().toISOString();const{data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name,legal_accepted:true,legal_version:'2026-09-24',legal_accepted_at:acceptedAt}}});if(error)return notice(authMsg,error.message,'err');notice(authMsg,data.session?'Compte créé.':'Compte créé. Vérifiez votre email si une confirmation est demandée.','ok')}
 async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,'Email ou mot de passe incorrect.','err')}
 async function requestPasswordReset(){
  const email=loginEmail.value.trim();
@@ -250,6 +401,14 @@ async function updateRecoveredPassword(){
  notice(recoveryMsg,'Mot de passe modifié. Vous allez pouvoir vous reconnecter.','ok');
  setTimeout(async()=>{await sb.auth.signOut();recoveryMode=false;passwordRecoveryBox.classList.add('hidden');document.querySelector('.tabs').classList.remove('hidden');loginBox.classList.remove('hidden');loginTab.classList.add('active');signupTab.classList.remove('active');newPassword.value='';newPasswordConfirm.value='';await loadState();notice(authMsg,'Mot de passe modifié avec succès. Connectez-vous avec votre nouveau mot de passe.','ok');},900);
 }
+function showLegalModal(){
+ const src=document.getElementById('legal');
+ const cards=src?[...src.querySelectorAll('.card')].filter((_,i)=>i>0):[];
+ legalModalContent.innerHTML=cards.map(c=>c.outerHTML).join('');
+ legalModal.classList.remove('hidden');
+ document.body.style.overflow='hidden';
+}
+function hideLegalModal(){legalModal.classList.add('hidden');document.body.style.overflow='';}
 async function logout(){recoveryMode=false;await sb.auth.signOut()}
 async function createHH(){const name=hhName.value.trim();if(!name)return notice(hhMsg,'Ajoutez un nom de foyer.','err');const{error}=await sb.rpc('create_household',{p_name:name});if(error)return notice(hhMsg,error.message,'err');await loadState()}
 async function joinHH(){const code=joinCode.value.trim().toUpperCase();const{error}=await sb.rpc('join_household_by_code',{p_code:code});if(error)return notice(hhMsg,'Code invalide ou foyer inaccessible.','err');await loadState()}
@@ -358,6 +517,7 @@ async function loadState(){
  if(!access){
    billingView.classList.remove('hidden');
    startTrialBtn.classList.toggle('hidden',householdRole!=='owner');
+   billingLegalWrap.classList.toggle('hidden',householdRole!=='owner');
    memberBillingInfo.classList.toggle('hidden',householdRole==='owner');
    if(new URLSearchParams(location.search).get('checkout')==='success'){
      notice(billingMsg,'Paiement validé. Activation de votre abonnement en cours…','ok');
@@ -405,8 +565,11 @@ function renderSubscriptionState(){
 }
 
 async function startCheckout(){
+ if(!billingLegal.checked){notice(billingMsg,'Veuillez accepter les CGV Famili Premium avant de continuer.','err');return;}
  startTrialBtn.disabled=true; startTrialBtn.textContent='Ouverture de Stripe…';
  try{
+   const{error:legalError}=await sb.rpc('record_legal_acceptance',{p_document_type:'cgv_subscription',p_document_version:'2026-09-24',p_household_id:household.id});
+   if(legalError)throw legalError;
    const{data,error}=await sb.functions.invoke('create-checkout',{body:{household_id:household.id}});
    if(error)throw error;
    if(!data?.url)throw new Error(data?.error||'Lien Stripe indisponible');
