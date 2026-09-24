@@ -93,3 +93,25 @@ V5.12 Launch Ready :
 - synchronisation Stripe conservée automatiquement via webhook et retour Checkout ;
 - version de cache PWA mise à jour ;
 - version destinée au lancement public, sous réserve des informations administratives finales.
+
+V5.13 Commercial Landing :
+- nouvelle page d'accueil commerciale publique ;
+- présentation claire des 4 bénéfices principaux ;
+- aperçu visuel de l'application ;
+- parcours en 3 étapes ;
+- offre 14 jours gratuits puis 5,99 €/mois ;
+- CTA vers création de compte et connexion ;
+- aucun téléchargement obligatoire.
+
+V5.14 Meal Limits :
+- interface limitée à 7 jours maximum pour les menus IA ;
+- option 1 jour ajoutée ;
+- à partir de 8 personnes détectées, le sélecteur passe automatiquement à 1 jour ;
+- message explicatif affiché à l'utilisateur ;
+- la limite serveur Supabase V13 reste la sécurité de référence.
+
+V5.15 Install Guide :
+- message App Store / Google Play bientôt disponibles ;
+- guide d'installation iPhone/iPad via Safari ;
+- guide d'installation Android via Chrome ;
+- onglets iOS / Android directement sur la page d'accueil.
