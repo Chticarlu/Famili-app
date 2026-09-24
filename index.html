@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Famili V5.11 Recovery Stable -->
+<!-- Famili V5.12 Launch Ready -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -233,7 +233,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
     <a class="btn full secondary" style="display:block;text-align:center;text-decoration:none" href="mailto:contact@fretixo.fr?subject=Support%20Famili">Contacter le support</a>
     <button id="deleteAccountBtn" class="btn full danger" onclick="deleteAccount()">Supprimer mon compte</button>
     <div id="accountMsg"></div>
-    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.11</p>
+    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.12</p>
    </div>
 
   </div>
@@ -676,26 +676,6 @@ async function startCheckout(){
 }
 
 
-async function syncSubscription(){
- const buttons=[document.getElementById('syncBillingBtn'),document.getElementById('syncBillingBtn2')].filter(Boolean);
- buttons.forEach(b=>{b.disabled=true;b.textContent='Synchronisation…';});
- try{
-   const{data,error}=await sb.functions.invoke('sync-subscription',{body:{household_id:household.id}});
-   if(error) throw error;
-   if(data?.error) throw new Error(data.error);
-   if(data?.synced){
-     alert('Abonnement synchronisé avec Stripe.');
-     await loadState();
-   }else{
-     alert(data?.message||'Aucun abonnement Stripe trouvé.');
-   }
- }catch(e){
-   console.error(e);
-   alert("Impossible de synchroniser l'abonnement pour le moment.");
- }finally{
-   buttons.forEach(b=>{b.disabled=false;b.textContent='Synchroniser mon abonnement';});
- }
-}
 
 async function openBillingPortal(){
  manageBillingBtn.disabled=true;

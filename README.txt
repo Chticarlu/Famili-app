@@ -87,3 +87,9 @@ V5.11 :
 - affichage d'un message plus précis si Supabase refuse le nouveau mot de passe ;
 - suppression des deux boutons manuels "Synchroniser mon abonnement" ;
 - la synchronisation Stripe reste automatique via webhook et au retour Checkout.
+
+V5.12 Launch Ready :
+- suppression du code mort de synchronisation manuelle d'abonnement ;
+- synchronisation Stripe conservée automatiquement via webhook et retour Checkout ;
+- version de cache PWA mise à jour ;
+- version destinée au lancement public, sous réserve des informations administratives finales.
