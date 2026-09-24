@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Famili V5.7 Beta Hardened -->
+<!-- Famili V5.8 Reset Debug -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -217,7 +217,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
     <a class="btn full secondary" style="display:block;text-align:center;text-decoration:none" href="mailto:contact@fretixo.fr?subject=Support%20Famili">Contacter le support</a>
     <button id="deleteAccountBtn" class="btn full danger" onclick="deleteAccount()">Supprimer mon compte</button>
     <div id="accountMsg"></div>
-    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.7 bêta</p>
+    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.8 diagnostic</p>
    </div>
 
   </div>
@@ -382,9 +382,19 @@ async function signup(){const name=signupName.value.trim(),email=signupEmail.val
 async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,'Email ou mot de passe incorrect.','err')}
 async function requestPasswordReset(){
  const email=loginEmail.value.trim();
- if(!email)return notice(authMsg,'Saisissez d’abord votre adresse e-mail.','err');
+ if(!email)return notice(authMsg,'Saisissez votre adresse e-mail.','err');
+ authMsg.innerHTML='<div class="notice"><span class="spinner"></span>Envoi du lien…</div>';
  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
- if(error)return notice(authMsg,'Impossible d’envoyer le lien pour le moment. Réessayez dans quelques instants.','err');
+ if(error){
+   console.error('Password reset error:',error);
+   const detail=[
+     error.name ? `Type : ${error.name}` : '',
+     error.message ? `Message : ${error.message}` : '',
+     error.status ? `Statut : ${error.status}` : '',
+     error.code ? `Code : ${error.code}` : ''
+   ].filter(Boolean).join(' — ');
+   return notice(authMsg,`Erreur Supabase : ${detail || 'erreur inconnue'}`,'err');
+ }
  notice(authMsg,'Un e-mail de réinitialisation vient de vous être envoyé. Pensez à vérifier vos courriers indésirables.','ok');
 }
 function showPasswordRecovery(){

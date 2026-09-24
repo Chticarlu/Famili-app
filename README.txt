@@ -60,3 +60,8 @@ Le backend Supabase a également été renforcé avec :
 - un seul foyer maximum par utilisateur ;
 - un seul propriétaire par foyer ;
 - contraintes de longueur côté base sur les principales données.
+
+V5.8 diagnostic :
+- affiche temporairement l'erreur exacte renvoyée par Supabase lors d'un "Mot de passe oublié ?"
+- affiche le type, le message, le statut HTTP et le code quand disponibles
+- objectif : identifier précisément l'erreur SMTP / rate limit / redirection / template
