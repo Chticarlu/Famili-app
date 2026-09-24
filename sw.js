@@ -1,4 +1,4 @@
-const C='famili-v5-8-reset-debug-1';
+const C='famili-v5-11-recovery-stable-1';
 const A=['/','/index.html','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
 
 self.addEventListener('install',event=>{

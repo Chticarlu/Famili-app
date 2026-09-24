@@ -65,3 +65,25 @@ V5.8 diagnostic :
 - affiche temporairement l'erreur exacte renvoyée par Supabase lors d'un "Mot de passe oublié ?"
 - affiche le type, le message, le statut HTTP et le code quand disponibles
 - objectif : identifier précisément l'erreur SMTP / rate limit / redirection / template
+
+V5.9 :
+- le bouton "Mot de passe oublié ?" ouvre désormais une page dédiée ;
+- cette page ne demande que l'adresse e-mail ;
+- bouton Retour vers la connexion ;
+- message de confirmation après envoi ;
+- retrait de l'affichage technique détaillé des erreurs Supabase.
+
+V5.10 :
+- lien de récupération renvoie vers ?recovery=1 ;
+- le mode récupération bloque entièrement le chargement normal de l'application ;
+- vérification explicite de la session avant updateUser ;
+- message spécifique si le nouveau mot de passe est identique à l'ancien ;
+- nettoyage de l'URL et déconnexion propre après succès.
+
+V5.11 :
+- prise en charge robuste des liens de récupération Supabase, y compris le flux PKCE avec ?code= ;
+- échange explicite du code de récupération contre une session avant modification du mot de passe ;
+- vérification de session avant updateUser ;
+- affichage d'un message plus précis si Supabase refuse le nouveau mot de passe ;
+- suppression des deux boutons manuels "Synchroniser mon abonnement" ;
+- la synchronisation Stripe reste automatique via webhook et au retour Checkout.

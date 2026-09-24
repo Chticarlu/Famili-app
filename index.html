@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Famili V5.8 Reset Debug -->
+<!-- Famili V5.11 Recovery Stable -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -47,11 +47,27 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   <div class="hero"><h2>Votre famille, ensemble.</h2><p>Un seul espace partagé pour l'organisation du foyer.</p></div>
   <div class="card">
    <div class="tabs"><button id="loginTab" class="active" onclick="tab('login')">Connexion</button><button id="signupTab" onclick="tab('signup')">Créer un compte</button></div>
-   <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button><button class="btn full secondary" onclick="requestPasswordReset()">Mot de passe oublié ?</button></div>
+   <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button><button class="btn full secondary" onclick="showResetRequest()">Mot de passe oublié ?</button></div>
    <div id="signupBox" class="hidden"><label>Prénom</label><input id="signupName" maxlength="120"><label>Email</label><input id="signupEmail" type="email"><label>Mot de passe</label><input id="signupPassword" type="password">
    <label class="inline-check"><input id="signupLegal" type="checkbox"><span>J’accepte les <button type="button" class="inline-link" onclick="showLegalModal()">CGU</button> et reconnais avoir pris connaissance de la <button type="button" class="inline-link" onclick="showLegalModal()">politique de confidentialité</button>.</span></label>
    <button class="btn full" onclick="signup()">Créer mon compte</button></div>
    <div id="authMsg"></div>
+
+   <div id="resetRequestBox" class="hidden">
+    <div class="topline" style="margin-bottom:8px">
+      <div>
+        <div class="muted">Compte Famili</div>
+        <h3 style="margin:3px 0 0">Mot de passe oublié</h3>
+      </div>
+      <button class="smallbtn" onclick="hideResetRequest()">Retour</button>
+    </div>
+    <p class="muted">Renseignez simplement l’adresse e-mail associée à votre compte. Nous vous enverrons un lien pour créer un nouveau mot de passe.</p>
+    <label>Adresse e-mail</label>
+    <input id="resetEmail" type="email" autocomplete="email" placeholder="vous@exemple.fr">
+    <button class="btn full" onclick="requestPasswordReset()">Envoyer le lien</button>
+    <div id="resetRequestMsg"></div>
+   </div>
+
    <div id="passwordRecoveryBox" class="hidden" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
     <h3 style="margin-top:0">Créer un nouveau mot de passe</h3>
     <p class="muted">Choisissez un mot de passe d’au moins 8 caractères.</p>
@@ -93,7 +109,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="item"><span>✨ Assistant Famili</span><b>Inclus</b></div>
    <p class="muted">Un seul abonnement couvre le foyer. Le paiement est géré de manière sécurisée par Stripe.</p>
    <label id="billingLegalWrap" class="inline-check"><input id="billingLegal" type="checkbox"><span>J’accepte les <button type="button" class="inline-link" onclick="showLegalModal()">CGV Famili Premium</button> et les conditions de résiliation. L’essai dure 14 jours puis l’abonnement est facturé 5,99 € / mois jusqu’à résiliation.</span></label>
-   <button id="startTrialBtn" class="btn full" onclick="startCheckout()">Commencer mes 14 jours gratuits</button><button id="syncBillingBtn" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button>
+   <button id="startTrialBtn" class="btn full" onclick="startCheckout()">Commencer mes 14 jours gratuits</button>
    <div id="billingMsg"></div>
   </div>
   <div class="card hidden" id="memberBillingInfo">
@@ -198,7 +214,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="card topline"><div><div class="muted">Foyer</div><b id="familyHH"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
    <div class="card"><h3>Membres</h3><div id="membersList"></div><div id="membershipActions"></div></div>
    <div class="card"><h3>Invitation</h3><div class="code" id="familyCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
-   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 100</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button><button id="syncBillingBtn2" class="btn full secondary" onclick="syncSubscription()">Synchroniser mon abonnement</button></div>
+   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 100</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button></div>
    <div class="card">
     <h3>Informations légales</h3>
     <p class="muted">Consultez les mentions légales, la confidentialité, les CGU et les conditions de l’abonnement.</p>
@@ -217,7 +233,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
     <a class="btn full secondary" style="display:block;text-align:center;text-decoration:none" href="mailto:contact@fretixo.fr?subject=Support%20Famili">Contacter le support</a>
     <button id="deleteAccountBtn" class="btn full danger" onclick="deleteAccount()">Supprimer mon compte</button>
     <div id="accountMsg"></div>
-    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.8 diagnostic</p>
+    <p class="muted" style="margin-top:14px;text-align:center">Famili • Version 5.11</p>
    </div>
 
   </div>
@@ -377,39 +393,108 @@ let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[],aiUsage=null;
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function notice(el,text,type=''){el.innerHTML=`<div class="notice ${type}">${esc(text)}</div>`}
-function tab(x){loginTab.classList.toggle('active',x==='login');signupTab.classList.toggle('active',x==='signup');loginBox.classList.toggle('hidden',x!=='login');signupBox.classList.toggle('hidden',x!=='signup');authMsg.innerHTML=''}
+function tab(x){
+ loginTab.classList.toggle('active',x==='login');
+ signupTab.classList.toggle('active',x==='signup');
+ loginBox.classList.toggle('hidden',x!=='login');
+ signupBox.classList.toggle('hidden',x!=='signup');
+ resetRequestBox.classList.add('hidden');
+ authMsg.innerHTML='';
+}
 async function signup(){const name=signupName.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value;if(!name||!email||password.length<8)return notice(authMsg,'Prénom, email et mot de passe de 8 caractères minimum.','err');if(!signupLegal.checked)return notice(authMsg,'Vous devez accepter les CGU et prendre connaissance de la politique de confidentialité.','err');const acceptedAt=new Date().toISOString();const{data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name,legal_accepted:true,legal_version:'2026-09-24',legal_accepted_at:acceptedAt}}});if(error)return notice(authMsg,error.message,'err');notice(authMsg,data.session?'Compte créé.':'Compte créé. Vérifiez votre email si une confirmation est demandée.','ok')}
 async function login(){const{error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});if(error)notice(authMsg,'Email ou mot de passe incorrect.','err')}
 async function requestPasswordReset(){
- const email=loginEmail.value.trim();
- if(!email)return notice(authMsg,'Saisissez votre adresse e-mail.','err');
- authMsg.innerHTML='<div class="notice"><span class="spinner"></span>Envoi du lien…</div>';
- const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+ const email=resetEmail.value.trim();
+ if(!email)return notice(resetRequestMsg,'Saisissez votre adresse e-mail.','err');
+ resetRequestMsg.innerHTML='<div class="notice"><span class="spinner"></span>Envoi du lien…</div>';
+ const recoveryUrl=`${location.origin}${location.pathname}?recovery=1`;
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:recoveryUrl});
  if(error){
    console.error('Password reset error:',error);
-   const detail=[
-     error.name ? `Type : ${error.name}` : '',
-     error.message ? `Message : ${error.message}` : '',
-     error.status ? `Statut : ${error.status}` : '',
-     error.code ? `Code : ${error.code}` : ''
-   ].filter(Boolean).join(' — ');
-   return notice(authMsg,`Erreur Supabase : ${detail || 'erreur inconnue'}`,'err');
+   return notice(resetRequestMsg,'Impossible d’envoyer le lien pour le moment. Réessayez dans quelques instants.','err');
  }
- notice(authMsg,'Un e-mail de réinitialisation vient de vous être envoyé. Pensez à vérifier vos courriers indésirables.','ok');
+ notice(resetRequestMsg,'Un e-mail de réinitialisation vient de vous être envoyé. Pensez à vérifier vos courriers indésirables.','ok');
+}
+function showResetRequest(){
+ loginBox.classList.add('hidden');
+ signupBox.classList.add('hidden');
+ document.querySelector('.tabs').classList.add('hidden');
+ authMsg.innerHTML='';
+ resetRequestMsg.innerHTML='';
+ resetEmail.value=loginEmail.value.trim();
+ resetRequestBox.classList.remove('hidden');
+ setTimeout(()=>resetEmail.focus(),0);
+}
+function hideResetRequest(){
+ resetRequestBox.classList.add('hidden');
+ document.querySelector('.tabs').classList.remove('hidden');
+ loginBox.classList.remove('hidden');
+ signupBox.classList.add('hidden');
+ loginTab.classList.add('active');
+ signupTab.classList.remove('active');
+ authMsg.innerHTML='';
 }
 function showPasswordRecovery(){
  recoveryMode=true;
- authView.classList.remove('hidden');householdView.classList.add('hidden');billingView.classList.add('hidden');appView.classList.add('hidden');nav.classList.add('hidden');
- loginBox.classList.add('hidden');signupBox.classList.add('hidden');document.querySelector('.tabs').classList.add('hidden');passwordRecoveryBox.classList.remove('hidden');authMsg.innerHTML='';
+ authView.classList.remove('hidden');
+ householdView.classList.add('hidden');
+ billingView.classList.add('hidden');
+ appView.classList.add('hidden');
+ nav.classList.add('hidden');
+ loginBox.classList.add('hidden');
+ signupBox.classList.add('hidden');
+ resetRequestBox.classList.add('hidden');
+ document.querySelector('.tabs').classList.add('hidden');
+ passwordRecoveryBox.classList.remove('hidden');
+ authMsg.innerHTML='';
+ recoveryMsg.innerHTML='';
+ window.scrollTo({top:0,behavior:'instant'});
 }
 async function updateRecoveredPassword(){
  const p=newPassword.value,p2=newPasswordConfirm.value;
  if(p.length<8)return notice(recoveryMsg,'Le mot de passe doit contenir au moins 8 caractères.','err');
  if(p!==p2)return notice(recoveryMsg,'Les deux mots de passe ne correspondent pas.','err');
+
+ const {data:{session},error:sessionError}=await sb.auth.getSession();
+ if(sessionError || !session){
+   console.error('Recovery session error:',sessionError);
+   return notice(recoveryMsg,'Le lien de réinitialisation n’est plus valide. Demandez un nouveau lien.','err');
+ }
+
  const {error}=await sb.auth.updateUser({password:p});
- if(error)return notice(recoveryMsg,'Impossible de modifier le mot de passe. Le lien a peut-être expiré.','err');
- notice(recoveryMsg,'Mot de passe modifié. Vous allez pouvoir vous reconnecter.','ok');
- setTimeout(async()=>{await sb.auth.signOut();recoveryMode=false;passwordRecoveryBox.classList.add('hidden');document.querySelector('.tabs').classList.remove('hidden');loginBox.classList.remove('hidden');loginTab.classList.add('active');signupTab.classList.remove('active');newPassword.value='';newPasswordConfirm.value='';await loadState();notice(authMsg,'Mot de passe modifié avec succès. Connectez-vous avec votre nouveau mot de passe.','ok');},900);
+ if(error){
+   console.error('Password update error:',error);
+   const msg=(error.message||'').toLowerCase();
+   if(msg.includes('different') || msg.includes('same')){
+     return notice(recoveryMsg,'Choisissez un mot de passe différent de votre ancien mot de passe.','err');
+   }
+   if(msg.includes('weak') || msg.includes('password should') || msg.includes('characters')){
+     return notice(recoveryMsg,'Ce mot de passe ne respecte pas les règles de sécurité. Choisissez-en un autre.','err');
+   }
+   return notice(recoveryMsg,`Impossible de modifier le mot de passe : ${error.message||'erreur inconnue'}`,'err');
+ }
+
+ notice(recoveryMsg,'Mot de passe modifié avec succès. Redirection vers la connexion…','ok');
+ setTimeout(async()=>{
+   await sb.auth.signOut();
+   recoveryMode=false;
+   history.replaceState({},'',location.pathname);
+   passwordRecoveryBox.classList.add('hidden');
+   resetRequestBox.classList.add('hidden');
+   document.querySelector('.tabs').classList.remove('hidden');
+   loginBox.classList.remove('hidden');
+   signupBox.classList.add('hidden');
+   loginTab.classList.add('active');
+   signupTab.classList.remove('active');
+   newPassword.value='';
+   newPasswordConfirm.value='';
+   authView.classList.remove('hidden');
+   householdView.classList.add('hidden');
+   billingView.classList.add('hidden');
+   appView.classList.add('hidden');
+   nav.classList.add('hidden');
+   notice(authMsg,'Mot de passe modifié. Connectez-vous avec votre nouveau mot de passe.','ok');
+ },900);
 }
 function showLegalModal(){
  const src=document.getElementById('legal');
@@ -897,11 +982,55 @@ async function confirmAiActions(btn){
 }
 
 
+async function initializeAuth(){
+ const params=new URLSearchParams(location.search);
+ const recoveryRequested=params.get('recovery')==='1';
+ const authCode=params.get('code');
+
+ if(authCode){
+   recoveryMode=true;
+   const {error}=await sb.auth.exchangeCodeForSession(authCode);
+   if(error){
+     console.error('Recovery code exchange error:',error);
+     showPasswordRecovery();
+     notice(recoveryMsg,'Le lien de réinitialisation n’est plus valide. Demandez un nouveau lien.','err');
+     return;
+   }
+   history.replaceState({},'',`${location.pathname}?recovery=1`);
+   showPasswordRecovery();
+   return;
+ }
+
+ if(recoveryRequested){
+   recoveryMode=true;
+   showPasswordRecovery();
+   return;
+ }
+
+ const hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
+ if(hashParams.get('type')==='recovery'){
+   recoveryMode=true;
+   showPasswordRecovery();
+   return;
+ }
+
+ await loadState();
+}
+
 sb.auth.onAuthStateChange((event)=>{
- if(event==='PASSWORD_RECOVERY'){showPasswordRecovery();return;}
- if(!recoveryMode)loadState();
+ if(event==='PASSWORD_RECOVERY'){
+   recoveryMode=true;
+   showPasswordRecovery();
+   return;
+ }
+ if(recoveryMode){
+   showPasswordRecovery();
+   return;
+ }
+ loadState();
 });
-loadState();
+
+initializeAuth();
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
 </body>
