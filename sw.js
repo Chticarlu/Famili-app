@@ -1,4 +1,4 @@
-const C='famili-v5-17-invitation-security';
+const C='famili-v5-18-mobile-ux';
 const A=['/','/index.html','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
 
 self.addEventListener('install',event=>{

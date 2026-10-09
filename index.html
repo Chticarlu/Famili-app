@@ -12,7 +12,7 @@
 <title>Famili — L'organisation familiale, enfin simple</title>
 <meta name="description" content="Planning, tâches, repas, courses, budget et assistant IA dans un seul espace partagé. Essayez Famili gratuitement pendant 14 jours.">
 <style>
-:root{--bg:#f5f6fa;--card:#fff;--text:#17181c;--muted:#777b86;--line:#e7e9f0;--accent:#6d5dfb;--accent2:#9b8cff;--soft:#f0eeff;--green:#159461;--red:#d84a4a;--shadow:0 12px 34px rgba(40,42,60,.08)}
+:root{--bg:#f5f6fa;--card:#fff;--text:#17181c;--muted:#626773;--line:#e7e9f0;--accent:#6d5dfb;--accent2:#9b8cff;--soft:#f0eeff;--green:#159461;--red:#d84a4a;--shadow:0 12px 34px rgba(40,42,60,.08)}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:95px}
 .app{max-width:820px;margin:auto;padding:18px} .hidden{display:none!important}
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px} .logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:900;font-size:23px;box-shadow:var(--shadow)}
@@ -73,11 +73,32 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 .install-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.install-tab{border:0;border-radius:12px;padding:10px;font-weight:900;background:#eceef4;color:var(--muted)}.install-tab.active{background:var(--soft);color:#5447d9}
 .install-panel{margin-top:12px}.install-step{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.install-step:last-child{border-bottom:0}.install-step-n{width:26px;height:26px;flex:0 0 26px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:#5447d9;font-weight:900}
 
+/* Mobile UX: keep native fields readable and long household content contained. */
+:root{color-scheme:light}
+body{padding-bottom:calc(110px + env(safe-area-inset-bottom));line-height:1.45}
+.app{padding-top:calc(18px + env(safe-area-inset-top));padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right))}
+input,select,textarea{font-size:16px;min-width:0;color:var(--text)}
+input[type="checkbox"]{width:24px;height:24px;min-width:24px;flex-shrink:0}
+button:not(.inline-link){min-height:44px}
+.smallbtn{min-width:44px;font-size:13px;flex-shrink:0}
+.suggestions button{min-height:44px}
+.nav button{font-size:11px;min-width:0;padding:6px 1px}
+.navin{grid-template-columns:repeat(7,minmax(0,1fr))}
+.item>div,.check,.check>div,.topline>div,.row>div{min-width:0}
+.title,.muted,.hero h2,.topline,.item{overflow-wrap:anywhere}
+.item>button{flex-shrink:0}
+.legal-modal{padding-bottom:max(18px,env(safe-area-inset-bottom))}
+.legal-modal-panel{max-height:88dvh}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.network-status{position:sticky;top:0;z-index:20;margin-bottom:14px}
+@media(max-width:360px){.app{padding-left:12px;padding-right:12px}.feature-grid{grid-template-columns:1fr}.nav button{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3" integrity="sha384-dl/4LkSyQ4uEucc48NM6VDZLAjLLq9yMzZ5JLXumBq7Ld33XBof73hseOqPhO89+" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="app">
+ <div id="networkStatus" class="notice network-status hidden" role="status" aria-live="polite"></div>
  <div class="brand"><div class="logo">F</div><div><h1>Famili</h1><p>Votre maison, mieux organisée.</p></div></div>
 
  <section id="authView">
@@ -172,11 +193,11 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 
   <div id="authCard" class="card auth-anchor">
    <div class="tabs"><button id="loginTab" class="active" onclick="tab('login')">Connexion</button><button id="signupTab" onclick="tab('signup')">Créer un compte</button></div>
-   <div id="loginBox"><label>Email</label><input id="loginEmail" type="email"><label>Mot de passe</label><input id="loginPassword" type="password"><button class="btn full" onclick="login()">Se connecter</button><button class="btn full secondary" onclick="showResetRequest()">Mot de passe oublié ?</button></div>
-   <div id="signupBox" class="hidden"><label>Prénom</label><input id="signupName" maxlength="120"><label>Email</label><input id="signupEmail" type="email"><label>Mot de passe</label><input id="signupPassword" type="password">
+   <div id="loginBox"><label for="loginEmail">Email</label><input id="loginEmail" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" type="email"><label for="loginPassword">Mot de passe</label><input id="loginPassword" autocomplete="current-password" type="password"><button class="btn full" onclick="login()">Se connecter</button><button class="btn full secondary" onclick="showResetRequest()">Mot de passe oublié ?</button></div>
+   <div id="signupBox" class="hidden"><label for="signupName">Prénom</label><input id="signupName" autocomplete="given-name" maxlength="120"><label for="signupEmail">Email</label><input id="signupEmail" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" type="email"><label for="signupPassword">Mot de passe</label><input id="signupPassword" autocomplete="new-password" type="password">
    <label class="inline-check"><input id="signupLegal" type="checkbox"><span>J’accepte les <button type="button" class="inline-link" onclick="showLegalModal()">CGU</button> et reconnais avoir pris connaissance de la <button type="button" class="inline-link" onclick="showLegalModal()">politique de confidentialité</button>.</span></label>
    <button class="btn full" onclick="signup()">Créer mon compte</button></div>
-   <div id="authMsg"></div>
+   <div id="authMsg" role="status" aria-live="polite"></div>
 
    <div id="resetRequestBox" class="hidden">
     <div class="topline" style="margin-bottom:8px">
@@ -187,8 +208,8 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
       <button class="smallbtn" onclick="hideResetRequest()">Retour</button>
     </div>
     <p class="muted">Renseignez simplement l’adresse e-mail associée à votre compte. Nous vous enverrons un lien pour créer un nouveau mot de passe.</p>
-    <label>Adresse e-mail</label>
-    <input id="resetEmail" type="email" autocomplete="email" placeholder="vous@exemple.fr">
+    <label for="resetEmail">Adresse e-mail</label>
+    <input id="resetEmail" inputmode="email" autocapitalize="none" spellcheck="false" type="email" autocomplete="email" placeholder="vous@exemple.fr">
     <button class="btn full" onclick="requestPasswordReset()">Envoyer le lien</button>
     <div id="resetRequestMsg"></div>
    </div>
@@ -196,10 +217,10 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div id="passwordRecoveryBox" class="hidden" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
     <h3 style="margin-top:0">Créer un nouveau mot de passe</h3>
     <p class="muted">Choisissez un mot de passe d’au moins 8 caractères.</p>
-    <label>Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password">
-    <label>Confirmer le mot de passe</label><input id="newPasswordConfirm" type="password" autocomplete="new-password">
+    <label for="newPassword">Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password">
+    <label for="newPasswordConfirm">Confirmer le mot de passe</label><input id="newPasswordConfirm" type="password" autocomplete="new-password">
     <button class="btn full" onclick="updateRecoveredPassword()">Enregistrer le nouveau mot de passe</button>
-    <div id="recoveryMsg"></div>
+    <div id="recoveryMsg" role="status" aria-live="polite"></div>
    </div>
   </div>
   <div class="muted" style="text-align:center;margin-top:10px">En utilisant Famili, vous pouvez consulter à tout moment nos <button type="button" class="inline-link" onclick="showLegalModal()">informations légales et conditions</button>.</div>
@@ -208,9 +229,9 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
  <section id="householdView" class="hidden">
   <div class="card topline"><div><div class="muted">Connecté</div><b id="userLabel"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
   <div class="hero"><h2>Créer votre foyer</h2><p>Ou rejoignez celui de votre famille avec un code.</p></div>
-  <div class="card"><h3>Créer un foyer</h3><label>Nom du foyer</label><input id="hhName" maxlength="80" placeholder="Famille Martin"><button class="btn full" onclick="createHH()">Créer</button></div>
-  <div class="card"><h3>Rejoindre un foyer</h3><label>Code</label><input id="joinCode" maxlength="32" autocomplete="off" spellcheck="false" style="text-transform:uppercase"><button class="btn full secondary" id="joinInviteBtn" onclick="joinHH()">Rejoindre</button></div>
-  <div id="hhMsg"></div>
+  <div class="card"><h3>Créer un foyer</h3><label for="hhName">Nom du foyer</label><input id="hhName" maxlength="80" placeholder="Famille Martin"><button class="btn full" onclick="createHH()">Créer</button></div>
+  <div class="card"><h3>Rejoindre un foyer</h3><label for="joinCode">Code</label><input id="joinCode" maxlength="32" autocapitalize="characters" inputmode="text" autocomplete="off" spellcheck="false" style="text-transform:uppercase"><button class="btn full secondary" id="joinInviteBtn" onclick="joinHH()">Rejoindre</button></div>
+  <div id="hhMsg" role="status" aria-live="polite"></div>
  </section>
 
 
@@ -236,7 +257,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <p class="muted">Un seul abonnement couvre le foyer. Le paiement est géré de manière sécurisée par Stripe.</p>
    <label id="billingLegalWrap" class="inline-check"><input id="billingLegal" type="checkbox"><span>J’accepte les <button type="button" class="inline-link" onclick="showLegalModal()">CGV Famili Premium</button> et les conditions de résiliation. L’essai dure 14 jours puis l’abonnement est facturé 5,99 € / mois jusqu’à résiliation.</span></label>
    <button id="startTrialBtn" class="btn full" onclick="startCheckout()">Commencer mes 14 jours gratuits</button>
-   <div id="billingMsg"></div>
+   <div id="billingMsg" role="status" aria-live="polite"></div>
   </div>
   <div class="card hidden" id="memberBillingInfo">
    <h3>Abonnement du foyer</h3>
@@ -268,7 +289,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
       <button onclick="prefillAssistant('Ajoute une tâche pour ') ">✅ Créer une tâche</button>
       <button onclick="prefillAssistant('Ajoute un rendez-vous ') ">📅 Ajouter un rendez-vous</button>
     </div>
-    <label>Votre demande</label>
+    <label for="assistantPrompt">Votre demande</label>
     <textarea id="assistantPrompt" maxlength="2000" placeholder="Ex. Ajoute du lait aux courses et mets dentiste jeudi à 17h."></textarea>
     <button class="btn full" onclick="askFamili()">Demander à Famili</button>
     <div id="assistantStatus"></div>
@@ -294,12 +315,12 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
   </div>
 
   <div id="planning" class="section">
-   <div class="card"><h2>Planning</h2><label>Événement</label><input id="eventTitle" maxlength="200"><div class="row"><div><label>Date</label><input id="eventDate" type="date"></div><div><label>Heure</label><input id="eventTime" type="time"></div></div><label>Pour qui ?</label><input id="eventPerson" maxlength="120"><button class="btn full" onclick="addEvent()">Ajouter</button></div>
+   <div class="card"><h2>Planning</h2><label for="eventTitle">Événement</label><input id="eventTitle" maxlength="200"><div class="row"><div><label for="eventDate">Date</label><input id="eventDate" type="date"></div><div><label for="eventTime">Heure</label><input id="eventTime" type="time"></div></div><label for="eventPerson">Pour qui ?</label><input id="eventPerson" maxlength="120"><button class="btn full" onclick="addEvent()">Ajouter</button></div>
    <div class="card"><div id="eventsList"></div></div>
   </div>
 
   <div id="tasks" class="section">
-   <div class="card"><h2>Tâches</h2><label>Tâche</label><input id="taskTitle" maxlength="200"><div class="row"><div><label>Pour qui ?</label><input id="taskPerson" maxlength="120"></div><div><label>Récurrence</label><select id="taskRepeat"><option value="none">Aucune</option><option value="daily">Tous les jours</option><option value="weekly">Chaque semaine</option></select></div></div><button class="btn full" onclick="addTask()">Ajouter</button></div>
+   <div class="card"><h2>Tâches</h2><label for="taskTitle">Tâche</label><input id="taskTitle" maxlength="200"><div class="row"><div><label for="taskPerson">Pour qui ?</label><input id="taskPerson" maxlength="120"></div><div><label for="taskRepeat">Récurrence</label><select id="taskRepeat"><option value="none">Aucune</option><option value="daily">Tous les jours</option><option value="weekly">Chaque semaine</option></select></div></div><button class="btn full" onclick="addTask()">Ajouter</button></div>
    <div class="card"><div id="tasksList"></div></div>
   </div>
 
@@ -307,36 +328,36 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="card">
     <div class="topline"><div><div class="muted">Famili IA</div><h3 style="margin:3px 0 0">🍽️ Assistant repas</h3></div><span class="pill">Beta</span></div>
     <p class="muted">Créez plusieurs jours de menus et la liste de courses associée.</p>
-    <label>Pour combien de personnes ?</label>
+    <label for="aiPeople">Pour combien de personnes ?</label>
     <input id="aiPeople" maxlength="120" placeholder="Ex. 2 adultes + 1 enfant" oninput="updateMealDayLimit()">
     <div class="row">
-      <div><label>Nombre de jours</label><select id="aiDays">
+      <div><label for="aiDays">Nombre de jours</label><select id="aiDays">
         <option value="1">1</option>
         <option value="3">3</option>
         <option value="5" selected>5</option>
         <option value="7">7</option>
       </select><div id="mealDayLimitHint" class="muted" style="margin-top:6px">Maximum : 7 jours.</div></div>
-      <div><label>Budget indicatif</label><input id="aiBudget" maxlength="120" placeholder="Ex. 70 €"></div>
+      <div><label for="aiBudget">Budget indicatif</label><input id="aiBudget" maxlength="120" placeholder="Ex. 70 €"></div>
     </div>
-    <label>Préférences</label>
+    <label for="aiPreferences">Préférences</label>
     <input id="aiPreferences" maxlength="1000" placeholder="Simple, rapide, familial…">
-    <label>Exclusions / allergies</label>
+    <label for="aiExclusions">Exclusions / allergies</label>
     <input id="aiExclusions" maxlength="1000" placeholder="Ex. sans poisson, allergie arachide…">
     <button class="btn full" onclick="generateMealPlan()">Générer mes menus</button>
     <div id="mealAiStatus"></div>
     <p class="muted" style="margin-bottom:0">Les menus et la liste de courses ne sont ajoutés qu’après votre confirmation.</p>
    </div>
-   <div class="card"><h3>Ajouter un repas manuellement</h3><label>Date</label><input id="mealDate" type="date"><label>Midi</label><input id="mealLunch" maxlength="1000"><label>Soir</label><input id="mealDinner" maxlength="1000"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
+   <div class="card"><h3>Ajouter un repas manuellement</h3><label for="mealDate">Date</label><input id="mealDate" type="date"><label for="mealLunch">Midi</label><input id="mealLunch" maxlength="1000"><label for="mealDinner">Soir</label><input id="mealDinner" maxlength="1000"><button class="btn full" onclick="saveMeal()">Enregistrer</button></div>
    <div class="card"><h3>Repas planifiés</h3><div id="mealsList"></div></div>
   </div>
 
   <div id="groceries" class="section">
-   <div class="card"><h2>Courses</h2><label>Article</label><input id="groceryName" maxlength="300"><label>Catégorie</label><select id="groceryCategory"><option>Fruits & légumes</option><option>Frais</option><option>Épicerie</option><option>Boissons</option><option>Hygiène</option><option>Bébé</option><option>Maison</option><option>Autre</option></select><button class="btn full" onclick="addGrocery()">Ajouter</button></div>
+   <div class="card"><h2>Courses</h2><label for="groceryName">Article</label><input id="groceryName" maxlength="300"><label for="groceryCategory">Catégorie</label><select id="groceryCategory"><option>Fruits & légumes</option><option>Frais</option><option>Épicerie</option><option>Boissons</option><option>Hygiène</option><option>Bébé</option><option>Maison</option><option>Autre</option></select><button class="btn full" onclick="addGrocery()">Ajouter</button></div>
    <div class="card"><div id="groceriesList"></div></div>
   </div>
 
   <div id="budget" class="section">
-   <div class="card"><h2>Budget</h2><label>Description</label><input id="budgetLabel" maxlength="200"><div class="row"><div><label>Montant</label><input id="budgetAmount" type="number" step="0.01"></div><div><label>Type</label><select id="budgetType"><option value="expense">Dépense</option><option value="income">Revenu</option></select></div></div><button class="btn full" onclick="addBudget()">Ajouter</button></div>
+   <div class="card"><h2>Budget</h2><label for="budgetLabel">Description</label><input id="budgetLabel" maxlength="200"><div class="row"><div><label for="budgetAmount">Montant</label><input id="budgetAmount" inputmode="decimal" type="number" step="0.01"></div><div><label for="budgetType">Type</label><select id="budgetType"><option value="expense">Dépense</option><option value="income">Revenu</option></select></div></div><button class="btn full" onclick="addBudget()">Ajouter</button></div>
    <div class="card"><div id="budgetTotals"></div><div id="budgetList"></div></div>
   </div>
 
@@ -355,7 +376,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
     <h3>Compte</h3>
     <p id="accountOwnerHint" class="muted">Gérez votre compte Famili.</p>
     <div id="ownerTransferBox" class="hidden">
-      <label>Transférer la propriété du foyer</label>
+      <label for="newOwnerSelect">Transférer la propriété du foyer</label>
       <select id="newOwnerSelect"></select>
       <button class="btn full secondary" onclick="transferOwnership()">Transférer la propriété</button>
       <p class="muted">Le nouveau propriétaire pourra ensuite gérer l’abonnement du foyer.</p>
@@ -499,7 +520,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 </div>
 
 <div id="legalModal" class="legal-modal hidden" onclick="if(event.target===this)hideLegalModal()">
- <div class="legal-modal-panel">
+ <div class="legal-modal-panel" role="dialog" aria-modal="true" aria-label="Informations légales et conditions" tabindex="-1">
   <div class="topline" style="position:sticky;top:0;background:var(--bg);padding:4px 0 10px;z-index:2">
    <div><div class="muted">Famili App</div><b>Informations légales et conditions</b></div>
    <button class="smallbtn" onclick="hideLegalModal()">Fermer</button>
@@ -519,7 +540,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
 </div></div>
 
 <script>
-const sb = supabase.createClient("https://mugtbxugqevnxoynkrfz.supabase.co", "sb_publishable_29N94MqLtk6ILcdM8PvCxg_M7ElVTYt");
+const sb = typeof supabase==='undefined' ? null : supabase.createClient("https://mugtbxugqevnxoynkrfz.supabase.co", "sb_publishable_29N94MqLtk6ILcdM8PvCxg_M7ElVTYt");
 let user=null, household=null, householdRole=null, subscription=null, channel=null, recoveryMode=false;
 let events=[],tasks=[],meals=[],groceries=[],budget=[],members=[],aiUsage=null;
 
@@ -645,14 +666,25 @@ async function updateRecoveredPassword(){
    notice(authMsg,'Mot de passe modifié. Connectez-vous avec votre nouveau mot de passe.','ok');
  },900);
 }
+let legalReturnFocus=null;
 function showLegalModal(){
+ legalReturnFocus=document.activeElement;
  const src=document.getElementById('legal');
  const cards=src?[...src.querySelectorAll('.card')].filter((_,i)=>i>0):[];
  legalModalContent.innerHTML=cards.map(c=>c.outerHTML).join('');
  legalModal.classList.remove('hidden');
  document.body.style.overflow='hidden';
+ legalModal.querySelector('button').focus();
 }
-function hideLegalModal(){legalModal.classList.add('hidden');document.body.style.overflow='';}
+function hideLegalModal(){legalModal.classList.add('hidden');document.body.style.overflow='';legalReturnFocus?.focus();}
+legalModal.addEventListener('keydown',event=>{
+ if(event.key==='Escape'){event.preventDefault();hideLegalModal();return;}
+ if(event.key!=='Tab')return;
+ const controls=[...legalModal.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
+ const first=controls[0],last=controls.at(-1);
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+ else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
 async function logout(){recoveryMode=false;await sb.auth.signOut()}
 async function createHH(){const name=hhName.value.trim();if(!name)return notice(hhMsg,'Ajoutez un nom de foyer.','err');const{error}=await sb.rpc('create_household',{p_name:name});if(error)return notice(hhMsg,error.message,'err');await loadState()}
 async function joinHH(){
@@ -898,7 +930,9 @@ async function waitForSubscriptionActivation(){
 }
 
 async function loadAll(){
+ if(!navigator.onLine){updateNetworkStatus();return;}
  const h=household.id;
+ try{
  const monthStart=new Date();monthStart.setDate(1);const monthKey=monthStart.toISOString().slice(0,10);
  const [a,b,c,d,e,f,g]=await Promise.all([
   sb.from('family_events').select('*').eq('household_id',h).order('event_date'),
@@ -909,8 +943,10 @@ async function loadAll(){
   sb.from('household_members').select('user_id,role,profiles(display_name,email)').eq('household_id',h),
   sb.from('ai_usage_monthly').select('request_count').eq('household_id',h).eq('month_start',monthKey).maybeSingle()
  ]);
+ if([a,b,c,d,e,f,g].some(result=>result.error)){showNetworkError('Actualisation impossible. Les dernières données affichées sont conservées. Réessayez avec une connexion.');return;}
  events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];aiUsage=g.data||null;
  render();
+ }catch(error){showNetworkError('Actualisation impossible. Les dernières données affichées sont conservées.');}
 }
 
 function subscribeRealtime(){
@@ -924,18 +960,33 @@ function subscribeRealtime(){
  .subscribe();
 }
 
-async function addEvent(){if(!eventTitle.value.trim()||!eventDate.value)return;await sb.from('family_events').insert({household_id:household.id,title:eventTitle.value.trim(),event_date:eventDate.value,event_time:eventTime.value||null,person:eventPerson.value.trim()||null});eventTitle.value='';eventPerson.value='';await loadAll()}
-async function delEvent(id){if(!confirm('Supprimer cet événement ?'))return;await sb.from('family_events').delete().eq('id',id);await loadAll()}
-async function addTask(){if(!taskTitle.value.trim())return;await sb.from('family_tasks').insert({household_id:household.id,title:taskTitle.value.trim(),assigned_to:taskPerson.value.trim()||null,repeat_rule:taskRepeat.value});taskTitle.value='';taskPerson.value='';await loadAll()}
-async function toggleTask(id,v){await sb.from('family_tasks').update({is_done:v}).eq('id',id);await loadAll()}
-async function delTask(id){if(!confirm('Supprimer cette tâche ?'))return;await sb.from('family_tasks').delete().eq('id',id);await loadAll()}
-async function saveMeal(){if(!mealDate.value)return;await sb.from('meals').upsert({household_id:household.id,meal_date:mealDate.value,lunch:mealLunch.value.trim()||null,dinner:mealDinner.value.trim()||null,created_by:user.id},{onConflict:'household_id,meal_date'});mealLunch.value='';mealDinner.value='';await loadAll()}
-async function delMeal(id){if(!confirm('Supprimer ce repas ?'))return;await sb.from('meals').delete().eq('id',id);await loadAll()}
-async function addGrocery(){if(!groceryName.value.trim())return;await sb.from('groceries').insert({household_id:household.id,name:groceryName.value.trim(),category:groceryCategory.value});groceryName.value='';await loadAll()}
-async function toggleGrocery(id,v){await sb.from('groceries').update({is_done:v}).eq('id',id);await loadAll()}
-async function delGrocery(id){if(!confirm('Supprimer cet article ?'))return;await sb.from('groceries').delete().eq('id',id);await loadAll()}
-async function addBudget(){const a=parseFloat(budgetAmount.value);if(!budgetLabel.value.trim()||!a)return;await sb.from('budget_entries').insert({household_id:household.id,label:budgetLabel.value.trim(),amount:a,entry_type:budgetType.value});budgetLabel.value='';budgetAmount.value='';await loadAll()}
-async function delBudget(id){if(!confirm('Supprimer ce mouvement du budget ?'))return;await sb.from('budget_entries').delete().eq('id',id);await loadAll()}
+
+function showNetworkError(message){networkStatus.textContent=message;networkStatus.classList.remove('hidden');}
+function updateNetworkStatus(){
+ if(!sb){showNetworkError('Famili ne peut pas démarrer : connexion au service indisponible. Vérifiez votre connexion puis rechargez la page.');return;}
+ if(!navigator.onLine)showNetworkError('Hors connexion. Les données affichées peuvent être anciennes. Vos saisies sont conservées ; reconnectez-vous avant de les enregistrer.');
+ else if(networkStatus.textContent.startsWith('Hors connexion.')){showNetworkError('Connexion rétablie. Vous pouvez réessayer votre enregistrement.');}
+}
+async function saveChange(action){
+ if(!navigator.onLine){updateNetworkStatus();return false;}
+ try{const result=await action();if(result.error)throw result.error;networkStatus.classList.add('hidden');return true;}
+ catch(error){showNetworkError('Enregistrement impossible. Vos saisies sont conservées. Vérifiez votre connexion puis réessayez.');return false;}
+}
+window.addEventListener('offline',updateNetworkStatus);
+window.addEventListener('online',updateNetworkStatus);
+
+async function addEvent(){if(!eventTitle.value.trim()||!eventDate.value)return;if(!await saveChange(()=>sb.from('family_events').insert({household_id:household.id,title:eventTitle.value.trim(),event_date:eventDate.value,event_time:eventTime.value||null,person:eventPerson.value.trim()||null})))return;eventTitle.value='';eventPerson.value='';await loadAll()}
+async function delEvent(id){if(!confirm('Supprimer cet événement ?'))return;if(!await saveChange(()=>sb.from('family_events').delete().eq('id',id)))return;await loadAll()}
+async function addTask(){if(!taskTitle.value.trim())return;if(!await saveChange(()=>sb.from('family_tasks').insert({household_id:household.id,title:taskTitle.value.trim(),assigned_to:taskPerson.value.trim()||null,repeat_rule:taskRepeat.value})))return;taskTitle.value='';taskPerson.value='';await loadAll()}
+async function toggleTask(id,v){if(!await saveChange(()=>sb.from('family_tasks').update({is_done:v}).eq('id',id))){render();return;}await loadAll()}
+async function delTask(id){if(!confirm('Supprimer cette tâche ?'))return;if(!await saveChange(()=>sb.from('family_tasks').delete().eq('id',id)))return;await loadAll()}
+async function saveMeal(){if(!mealDate.value)return;if(!await saveChange(()=>sb.from('meals').upsert({household_id:household.id,meal_date:mealDate.value,lunch:mealLunch.value.trim()||null,dinner:mealDinner.value.trim()||null,created_by:user.id},{onConflict:'household_id,meal_date'})))return;mealLunch.value='';mealDinner.value='';await loadAll()}
+async function delMeal(id){if(!confirm('Supprimer ce repas ?'))return;if(!await saveChange(()=>sb.from('meals').delete().eq('id',id)))return;await loadAll()}
+async function addGrocery(){if(!groceryName.value.trim())return;if(!await saveChange(()=>sb.from('groceries').insert({household_id:household.id,name:groceryName.value.trim(),category:groceryCategory.value})))return;groceryName.value='';await loadAll()}
+async function toggleGrocery(id,v){if(!await saveChange(()=>sb.from('groceries').update({is_done:v}).eq('id',id))){render();return;}await loadAll()}
+async function delGrocery(id){if(!confirm('Supprimer cet article ?'))return;if(!await saveChange(()=>sb.from('groceries').delete().eq('id',id)))return;await loadAll()}
+async function addBudget(){const a=parseFloat(budgetAmount.value);if(!budgetLabel.value.trim()||!a)return;if(!await saveChange(()=>sb.from('budget_entries').insert({household_id:household.id,label:budgetLabel.value.trim(),amount:a,entry_type:budgetType.value})))return;budgetLabel.value='';budgetAmount.value='';await loadAll()}
+async function delBudget(id){if(!confirm('Supprimer ce mouvement du budget ?'))return;if(!await saveChange(()=>sb.from('budget_entries').delete().eq('id',id)))return;await loadAll()}
 
 function euro(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0)}
 function emptyState(emoji,title,text,actionLabel='',action=''){
@@ -998,7 +1049,7 @@ function render(){
  if(laterEvents.length) eventGroups.push(`<div class="group-title">Plus tard</div>${laterEvents.map(eventItem).join('')}`);
  eventsList.innerHTML=eventGroups.join('')||emptyState('🗓️','Planning vide','Ajoutez votre premier rendez-vous ou événement.','Créer un événement',"eventTitle.focus()");
  const sortedTasks=[...tasks].sort((a,b)=>Number(a.is_done)-Number(b.is_done));
- tasksList.innerHTML=sortedTasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${esc(t.title)}</div><div class="muted">${esc(t.assigned_to||'Non attribuée')}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||emptyState('✅','Aucune tâche','Tout est calme pour le moment.','Ajouter une tâche',"taskTitle.focus()");
+ tasksList.innerHTML=sortedTasks.map(t=>`<div class="item"><div class="check"><input type="checkbox" aria-label="${esc(t.title)}" ${t.is_done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div><div class="title" style="${t.is_done?'text-decoration:line-through;opacity:.5':''}">${esc(t.title)}</div><div class="muted">${esc(t.assigned_to||'Non attribuée')}</div>${t.repeat_rule!=='none'?`<span class="pill">${t.repeat_rule==='daily'?'Quotidienne':'Hebdomadaire'}</span>`:''}</div></div><button class="smallbtn danger" onclick="delTask('${t.id}')">Suppr.</button></div>`).join('')||emptyState('✅','Aucune tâche','Tout est calme pour le moment.','Ajouter une tâche',"taskTitle.focus()");
  mealsList.innerHTML=meals.map(m=>`<div class="item"><div><div class="title">${new Date(m.meal_date+'T00:00').toLocaleDateString('fr-FR')}</div><div class="muted">Midi : ${esc(m.lunch||'—')} • Soir : ${esc(m.dinner||'—')}</div></div><button class="smallbtn danger" onclick="delMeal('${m.id}')">Suppr.</button></div>`).join('')||emptyState('🍽️','Aucun repas planifié','L’Assistant repas peut préparer plusieurs jours en quelques secondes.','Créer des menus avec l’IA',"aiPeople.focus()");
  const groceryOrder=['Fruits & légumes','Frais','Épicerie','Boissons','Hygiène','Bébé','Maison','Autre'];
  const sortedGroceries=[...groceries].sort((a,b)=>Number(a.is_done)-Number(b.is_done) || groceryOrder.indexOf(a.category)-groceryOrder.indexOf(b.category) || a.name.localeCompare(b.name,'fr'));
@@ -1006,7 +1057,7 @@ function render(){
  for(const g of sortedGroceries){
    if(!g.is_done && g.category!==lastCategory){groceryHtml.push(`<div class="group-title">${esc(g.category)}</div>`);lastCategory=g.category;}
    if(g.is_done && lastCategory!=='__done__'){groceryHtml.push('<div class="group-title">Déjà acheté</div>');lastCategory='__done__';}
-   groceryHtml.push(`<div class="item"><div class="check"><input type="checkbox" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${esc(g.name)}</div><span class="pill">${esc(g.category)}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`);
+   groceryHtml.push(`<div class="item"><div class="check"><input type="checkbox" aria-label="${esc(g.name)}" ${g.is_done?'checked':''} onchange="toggleGrocery('${g.id}',this.checked)"><div><div class="title" style="${g.is_done?'text-decoration:line-through;opacity:.5':''}">${esc(g.name)}</div><span class="pill">${esc(g.category)}</span></div></div><button class="smallbtn danger" onclick="delGrocery('${g.id}')">Suppr.</button></div>`);
  }
  groceriesList.innerHTML=groceryHtml.join('')||emptyState('🛒','Liste de courses vide','Ajoutez un article ou demandez-le directement à Assistant Famili.','Ajouter un article',"groceryName.focus()");
  const inc=month.filter(x=>x.entry_type==='income').reduce((s,x)=>s+Number(x.amount),0);
@@ -1210,7 +1261,7 @@ async function initializeAuth(){
  await loadState();
 }
 
-sb.auth.onAuthStateChange((event)=>{
+if(sb)sb.auth.onAuthStateChange((event)=>{
  if(event==='PASSWORD_RECOVERY'){
    recoveryMode=true;
    showPasswordRecovery();
@@ -1223,7 +1274,9 @@ sb.auth.onAuthStateChange((event)=>{
  loadState();
 });
 
-initializeAuth();
+if(sb)initializeAuth();
+else document.querySelectorAll('button').forEach(button=>{if(/^(login|signup|requestPasswordReset|updateRecoveredPassword|createHH|joinHH)\(/.test(button.getAttribute('onclick')||''))button.disabled=true;});
+updateNetworkStatus();
 setTimeout(updateMealDayLimit,0);
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
