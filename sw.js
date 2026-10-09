@@ -1,4 +1,4 @@
-const C='famili-v5-16-offline-shell-refresh';
+const C='famili-v5-17-invitation-security';
 const A=['/','/index.html','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
 
 self.addEventListener('install',event=>{
