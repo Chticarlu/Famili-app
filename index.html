@@ -752,6 +752,11 @@ async function loadState(){
  if(!household){householdView.classList.remove('hidden');return}
  billingHH.textContent=household.name;
  hhTitle.textContent=household.name;familyHH.textContent=household.name;inviteCode.textContent=household.invite_code;familyCode.textContent=household.invite_code;
+ // Stripe is authoritative; refresh the subscription before deciding whether to show Checkout.
+ try{
+   const {error:syncError}=await sb.functions.invoke('sync-subscription',{body:{household_id:household.id}});
+   if(syncError) console.warn('Billing sync unavailable',syncError);
+ }catch(syncError){console.warn('Billing sync failed',syncError);}
  const{data:sub}=await sb.from('subscriptions').select('*').eq('household_id',household.id).maybeSingle();
  subscription=sub||null;
  const access=hasSubscriptionAccess(subscription);
