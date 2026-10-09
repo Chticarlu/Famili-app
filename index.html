@@ -344,7 +344,7 @@ button{font:inherit;cursor:pointer} .btn{border:0;border-radius:14px;padding:12p
    <div class="card topline"><div><div class="muted">Foyer</div><b id="familyHH"></b></div><button class="smallbtn" onclick="logout()">Déconnexion</button></div>
    <div class="card"><h3>Membres</h3><div id="membersList"></div><div id="membershipActions"></div></div>
    <div class="card"><h3>Invitation</h3><div class="code" id="familyCode">--------</div><button class="btn full secondary" onclick="copyCode()">Copier le code</button></div>
-   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 100</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button></div>
+   <div class="card"><h3>Abonnement</h3><div id="subscriptionInfo" class="muted">Chargement…</div><div id="aiUsageBox" class="statusbox"><div class="topline"><span class="muted">Utilisation IA ce mois-ci</span><b id="aiUsageText">0 / 500</b></div><div class="usagebar"><div id="aiUsageBar" style="width:0%"></div></div><div id="aiUsageHint" class="muted">Le quota est partagé par tout le foyer.</div></div><button id="manageBillingBtn" class="btn full secondary hidden" onclick="openBillingPortal()">Gérer mon abonnement</button></div>
    <div class="card">
     <h3>Informations légales</h3>
     <p class="muted">Consultez les mentions légales, la confidentialité, les CGU et les conditions de l’abonnement.</p>
@@ -972,9 +972,9 @@ function render(){
  budgetTotals.innerHTML=`<div class="row"><div><div class="muted">Revenus du mois</div><h2 style="color:var(--green)">${euro(inc)}</h2></div><div><div class="muted">Dépenses du mois</div><h2 style="color:var(--red)">${euro(exp)}</h2></div></div>`;
  budgetList.innerHTML=budget.map(b=>`<div class="item"><div><div class="title">${esc(b.label)}</div><div class="muted">${new Date(b.entry_date+'T00:00').toLocaleDateString('fr-FR')}</div></div><div><b style="color:${b.entry_type==='income'?'var(--green)':'var(--red)'}">${b.entry_type==='income'?'+':'-'}${euro(b.amount)}</b><br><button class="smallbtn danger" onclick="delBudget('${b.id}')">Suppr.</button></div></div>`).join('')||emptyState('💶','Aucun mouvement','Ajoutez une dépense ou un revenu pour commencer le suivi.','Ajouter un mouvement',"budgetLabel.focus()");
  membersList.innerHTML=members.map(m=>`<div class="item"><div><div class="title">${esc(m.profiles?.display_name||m.profiles?.email||'Membre')}</div><div class="muted">${m.role==='owner'?'Propriétaire du foyer':'Membre'}</div></div></div>`).join('');
- const used=Math.max(0,Number(aiUsage?.request_count||0)), limit=100, pct=Math.min(100,Math.round((used/limit)*100));
+ const used=Math.max(0,Number(aiUsage?.request_count||0)), limit=500, pct=Math.min(100,Math.round((used/limit)*100));
  aiUsageText.textContent=`${used} / ${limit}`;aiUsageBar.style.width=`${pct}%`;
- aiUsageHint.textContent=used>=limit?'Quota mensuel atteint. Il se réinitialisera le mois prochain.':used>=80?`Il reste ${limit-used} requête${limit-used>1?'s':''} IA ce mois-ci.`:'Le quota est partagé par tout le foyer.';
+ aiUsageHint.textContent=used>=limit?'Quota mensuel atteint. Il se réinitialisera le mois prochain.':used>=400?`Il reste ${limit-used} requête${limit-used>1?'s':''} IA ce mois-ci.`:'Le quota est partagé par tout le foyer.';
  membershipActions.innerHTML=householdRole==='owner'
    ? '<div class="notice">Vous êtes le propriétaire de ce foyer.</div>'
    : '<button class="btn full danger" onclick="leaveHousehold()">Quitter le foyer</button>';
