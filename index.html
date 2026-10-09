@@ -79,7 +79,8 @@ body{padding-bottom:calc(110px + env(safe-area-inset-bottom));line-height:1.45}
 .app{padding-top:calc(18px + env(safe-area-inset-top));padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right))}
 input,select,textarea{font-size:16px;min-width:0;color:var(--text)}
 input[type="checkbox"]{width:24px;height:24px;min-width:24px;flex-shrink:0}
-button:not(.inline-link){min-height:44px}
+button{min-height:44px}
+.inline-link{display:inline-flex;align-items:center;min-width:44px}
 .smallbtn{min-width:44px;font-size:13px;flex-shrink:0}
 .suggestions button{min-height:44px}
 .nav button{font-size:11px;min-width:0;padding:6px 1px}
