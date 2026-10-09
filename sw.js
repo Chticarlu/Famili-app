@@ -1,4 +1,4 @@
-const C='famili-v5-15-install-guide-1';
+const C='famili-v5-16-offline-shell-refresh';
 const A=['/','/index.html','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
 
 self.addEventListener('install',event=>{
@@ -22,7 +22,16 @@ self.addEventListener('fetch',event=>{
   if(req.mode==='navigate'){
     event.respondWith(
       fetch(req)
-        .then(res=>res)
+        .then(async res=>{
+          // Persist only the public shell, never recovery or checkout URLs.
+          if(res.ok && !url.search && (url.pathname==='/' || url.pathname==='/index.html')){
+            try{
+              const cache=await caches.open(C);
+              await cache.put('/index.html',res.clone());
+            }catch(_){ /* A storage failure must not block online navigation. */ }
+          }
+          return res;
+        })
         .catch(()=>caches.match('/index.html'))
     );
     return;
