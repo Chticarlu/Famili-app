@@ -944,10 +944,15 @@ async function loadAll(){
   sb.from('household_members').select('user_id,role,profiles(display_name,email)').eq('household_id',h),
   sb.from('ai_usage_monthly').select('request_count').eq('household_id',h).eq('month_start',monthKey).maybeSingle()
  ]);
- if([a,b,c,d,e,f,g].some(result=>result.error)){showNetworkError('Actualisation impossible. Les dernières données affichées sont conservées. Réessayez avec une connexion.');return;}
+ const failedReads=[['événements',a],['tâches',b],['repas',c],['courses',d],['budget',e],['membres',f],['quota IA',g]].filter(([,result])=>result.error);
+ if(failedReads.length){
+   console.error('[FAMILI] Échec de synchronisation',failedReads.map(([name,result])=>({section:name,code:result.error?.code||'inconnu',status:result.status||null,message:result.error?.message||'Erreur inconnue'})));
+   showNetworkError('Actualisation impossible ('+failedReads.map(([name,result])=>name+' : '+(result.error?.code||result.status||'erreur')).join(', ')+'). Les dernières données affichées sont conservées.');
+   return;
+ }
  events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];aiUsage=g.data||null;
  render();
- }catch(error){showNetworkError('Actualisation impossible. Les dernières données affichées sont conservées.');}
+ }catch(error){console.error('[FAMILI] Exception de synchronisation',error);showNetworkError('Actualisation impossible (erreur de synchronisation). Les dernières données affichées sont conservées.');}
 }
 
 function subscribeRealtime(){
@@ -971,7 +976,7 @@ function updateNetworkStatus(){
 async function saveChange(action){
  if(!navigator.onLine){updateNetworkStatus();return false;}
  try{const result=await action();if(result.error)throw result.error;networkStatus.classList.add('hidden');return true;}
- catch(error){showNetworkError('Enregistrement impossible. Vos saisies sont conservées. Vérifiez votre connexion puis réessayez.');return false;}
+ catch(error){console.error('[FAMILI] Échec enregistrement',error);showNetworkError('Enregistrement impossible (code : '+(error?.code||error?.status||'inconnu')+'). Vos saisies sont conservées. Réessayez après vérification.');return false;}
 }
 window.addEventListener('offline',updateNetworkStatus);
 window.addEventListener('online',updateNetworkStatus);
