@@ -941,7 +941,7 @@ async function loadAll(){
   sb.from('meals').select('*').eq('household_id',h).order('meal_date'),
   sb.from('groceries').select('*').eq('household_id',h).order('created_at'),
   sb.from('budget_entries').select('*').eq('household_id',h).order('entry_date',{ascending:false}),
-  sb.from('household_members').select('user_id,role,profiles(display_name,email)').eq('household_id',h),
+  sb.from('household_members').select('user_id,role').eq('household_id',h),
   sb.from('ai_usage_monthly').select('request_count').eq('household_id',h).eq('month_start',monthKey).maybeSingle()
  ]);
  const failedReads=[['événements',a],['tâches',b],['repas',c],['courses',d],['budget',e],['membres',f],['quota IA',g]].filter(([,result])=>result.error);
