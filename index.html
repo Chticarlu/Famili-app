@@ -950,7 +950,13 @@ async function loadAll(){
    showNetworkError('Actualisation impossible ('+failedReads.map(([name,result])=>name+' : '+(result.error?.code||result.status||'erreur')).join(', ')+'). Les dernières données affichées sont conservées.');
    return;
  }
- events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];aiUsage=g.data||null;
+ events=a.data||[];tasks=b.data||[];meals=c.data||[];groceries=d.data||[];budget=e.data||[];members=f.data||[];
+ if(members.length){
+   const {data:memberProfiles,error:profilesError}=await sb.from('profiles').select('id,display_name,email').in('id',members.map(m=>m.user_id));
+   if(profilesError){console.warn('[FAMILI] Profils des membres indisponibles',profilesError.code||profilesError.status||'inconnu');}
+   else {const byId=new Map((memberProfiles||[]).map(p=>[p.id,p]));members=members.map(m=>({...m,profiles:byId.get(m.user_id)||null}));}
+ }
+ aiUsage=g.data||null;
  render();
  }catch(error){console.error('[FAMILI] Exception de synchronisation',error);showNetworkError('Actualisation impossible (erreur de synchronisation). Les dernières données affichées sont conservées.');}
 }
